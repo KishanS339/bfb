@@ -40,10 +40,11 @@ const connectDB = async () => {
   return mongoose.connect(MONGODB_URI);
 };
 
-connectDB()
-  .then(() => {
-    // Only bind to port if we are NOT running in Vercel's serverless environment
-    if (!process.env.VERCEL) {
+// Only run the persistent connection and listener locally.
+// On Vercel, the database connection is explicitly managed per-request inside `api/index.js`.
+if (!process.env.VERCEL) {
+  connectDB()
+    .then(() => {
       console.log('');
       console.log('  ┌─────────────────────────────────────────────┐');
       console.log('  │                                             │');
@@ -56,14 +57,14 @@ connectDB()
       console.log('  └─────────────────────────────────────────────┘');
       console.log('');
       app.listen(PORT);
-    }
-  })
-  .catch(err => {
-    console.error('');
-    console.error('  ❌ MongoDB connection failed:', err.message);
-    console.error('  Make sure MongoDB is running or MONGODB_URI is correct.');
-    console.error('');
-  });
+    })
+    .catch(err => {
+      console.error('');
+      console.error('  ❌ MongoDB connection failed:', err.message);
+      console.error('  Make sure MongoDB is running or MONGODB_URI is correct.');
+      console.error('');
+    });
+}
 
 // Export the Express API for Vercel's serverless functions
 module.exports = app;
