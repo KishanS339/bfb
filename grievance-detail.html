@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="View detailed status and timeline for your civic grievance.">
+  <title>Grievance GRV-2041 — NagaraSeva</title>
+  <link rel="stylesheet" href="styles/design-system.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <style>
+    .detail-status-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-5) var(--space-6);
+      border-radius: var(--radius-lg);
+      background: rgba(255,111,0,0.08);
+      border: 1px solid rgba(255,111,0,0.2);
+      margin-bottom: var(--space-7);
+    }
+    .detail-status-bar .status-pulse {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--color-warning);
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+    .photo-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+    .photo-thumb {
+      aspect-ratio: 4/3;
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+    .officer-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-5);
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-4);
+    }
+    .comment-box {
+      margin-top: var(--space-6);
+    }
+    .comment-item {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .comment-item:last-child { border-bottom: none; }
+    .comment-content {
+      flex: 1;
+    }
+    .comment-author {
+      font-weight: var(--fw-semibold);
+      font-size: var(--fs-body-sm);
+    }
+    .comment-time {
+      font-size: var(--fs-label);
+      color: var(--text-on-dark-muted);
+    }
+    .comment-text {
+      font-size: var(--fs-body-sm);
+      color: var(--text-on-dark-secondary);
+      margin-top: var(--space-1);
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: var(--fs-body-sm);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .info-label {
+      color: var(--text-on-dark-secondary);
+    }
+    .info-row .info-value {
+      font-weight: var(--fw-medium);
+    }
+    .sla-bar {
+      margin-top: var(--space-4);
+    }
+    .sla-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--fs-label);
+      color: var(--text-on-dark-secondary);
+      margin-bottom: var(--space-2);
+    }
+    @media (max-width: 768px) {
+      .photo-gallery {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="topbar-brand">
+        <div class="brand-icon">🏛️</div>
+        <div class="brand-name">Nagara<span>Seva</span></div>
+      </a>
+      <div class="topbar-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="citizen-dashboard.html" class="nav-link">My Grievances</a>
+        <a href="report-grievance.html" class="nav-link">Report Issue</a>
+        <a href="map-view.html" class="nav-link">City Map</a>
+      </div>
+      <div class="topbar-actions">
+        <a href="report-grievance.html" class="btn btn-primary btn-sm">+ Report Issue</a>
+        <button class="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+  <div class="mobile-nav">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="citizen-dashboard.html" class="nav-link">My Grievances</a>
+    <a href="report-grievance.html" class="nav-link">Report Issue</a>
+    <a href="map-view.html" class="nav-link">City Map</a>
+  </div>
+
+  <div class="page">
+    <div class="page-content">
+      <div class="page-header animate-in">
+        <div class="breadcrumb">
+          <a href="index.html">Home</a>
+          <span class="separator">/</span>
+          <a href="citizen-dashboard.html">My Grievances</a>
+          <span class="separator">/</span>
+          <span>GRV-2041</span>
+        </div>
+        <h1 class="text-h1">Pothole on MG Road near Trinity Circle</h1>
+        <p class="text-secondary mt-2">Grievance ID: GRV-2041 • Filed on March 10, 2026</p>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="detail-status-bar animate-in">
+        <div class="status-pulse"></div>
+        <div>
+          <span class="badge badge-in-progress" style="margin-right:var(--space-3);">⏳ In Progress</span>
+          <span class="text-secondary text-body-sm">Assigned to Road Infrastructure Department • Updated 2 hours ago</span>
+        </div>
+      </div>
+
+      <!-- Main Detail Layout -->
+      <div class="detail-layout">
+        <!-- Left Column: Main Content -->
+        <div class="flex flex-col gap-6">
+          <!-- Description -->
+          <div class="glass-card animate-in">
+            <h2 class="text-h3 mb-4">Description</h2>
+            <p class="text-body-sm" style="color:var(--text-on-dark-secondary);line-height:var(--lh-relaxed);">
+              There is a large pothole approximately 2 feet wide and 8 inches deep on MG Road, 
+              near the Trinity Circle junction on the left lane approaching from Brigade Road. 
+              The pothole is extremely dangerous for two-wheelers and has already caused multiple 
+              accidents. The area gets worse during rainy weather as the pothole fills with water 
+              and becomes invisible to drivers. Needs immediate repair.
+            </p>
+
+            <h3 class="text-body mt-6 mb-3" style="font-weight:var(--fw-semibold);">Photos</h3>
+            <div class="photo-gallery">
+              <div class="photo-thumb">🚧</div>
+              <div class="photo-thumb">📸</div>
+              <div class="photo-thumb">🛣️</div>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="glass-card animate-in">
+            <h2 class="text-h3 mb-6">Status Timeline</h2>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-time">Mar 12, 2026 — 10:30 AM</div>
+                <div class="timeline-content">
+                  <strong>Repair work initiated</strong> — Road maintenance crew dispatched to the location. Expected completion by EOD March 13.
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-time">Mar 11, 2026 — 2:15 PM</div>
+                <div class="timeline-content">
+                  <strong>Assigned to officer</strong> — Grievance assigned to <strong>Ramesh Kumar</strong>, Sr. Engineer, Road Infrastructure Dept.
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-time">Mar 10, 2026 — 5:45 PM</div>
+                <div class="timeline-content">
+                  <strong>Status changed to In Progress</strong> — BBMP acknowledged the grievance.
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-time">Mar 10, 2026 — 4:30 PM</div>
+                <div class="timeline-content">
+                  <strong>AI categorized</strong> — Automatically categorized as "Road Damage" with High priority.
+                </div>
+              </div>
+              <div class="timeline-item completed">
+                <div class="timeline-time">Mar 10, 2026 — 4:28 PM</div>
+                <div class="timeline-content">
+                  <strong>Grievance submitted</strong> — Filed by citizen with 3 photos and location details.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comments -->
+          <div class="glass-card animate-in">
+            <h2 class="text-h3 mb-4">Comments & Updates</h2>
+            <div class="comment-item">
+              <div class="avatar sm">RK</div>
+              <div class="comment-content">
+                <div class="flex items-center gap-3">
+                  <span class="comment-author">Ramesh Kumar</span>
+                  <span class="comment-time">Mar 12, 2026 • 10:30 AM</span>
+                  <span class="badge badge-in-progress" style="font-size:10px;">Officer</span>
+                </div>
+                <div class="comment-text">Repair crew has been dispatched. We will complete the work by tomorrow evening. Thank you for reporting.</div>
+              </div>
+            </div>
+            <div class="comment-item">
+              <div class="avatar sm" style="background:linear-gradient(135deg,var(--color-success),var(--color-accent));">AS</div>
+              <div class="comment-content">
+                <div class="flex items-center gap-3">
+                  <span class="comment-author">Akarsh S</span>
+                  <span class="comment-time">Mar 11, 2026 • 6:00 PM</span>
+                  <span class="tag">Citizen</span>
+                </div>
+                <div class="comment-text">Thank you for the quick response. The pothole seems to have gotten bigger today due to rain. Please prioritize this.</div>
+              </div>
+            </div>
+
+            <div class="comment-box">
+              <div class="form-group">
+                <textarea class="form-textarea" placeholder="Add a comment or update..." rows="3"></textarea>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="if(window.showToast) showToast('Comment posted!','success')">Post Comment</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Info Sidebar -->
+        <div class="flex flex-col gap-6">
+          <!-- Quick Info -->
+          <div class="glass-card animate-in">
+            <h2 class="text-h3 mb-4">Details</h2>
+            <div class="info-row">
+              <span class="info-label">Grievance ID</span>
+              <span class="info-value text-accent">GRV-2041</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Category</span>
+              <span class="info-value">🚧 Road Damage</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Priority</span>
+              <span class="badge badge-priority-high">High</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Status</span>
+              <span class="badge badge-in-progress">In Progress</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Filed</span>
+              <span class="info-value">Mar 10, 2026</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Location</span>
+              <span class="info-value">MG Road, Ward 113</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Department</span>
+              <span class="info-value">Road Infrastructure</span>
+            </div>
+          </div>
+
+          <!-- SLA Tracker -->
+          <div class="glass-card animate-in">
+            <h2 class="text-h3 mb-4">SLA Tracker</h2>
+            <div class="sla-bar">
+              <div class="sla-info">
+                <span>Time Elapsed</span>
+                <span>2 of 5 days</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill warning animated" style="width:40%"></div>
+              </div>
+            </div>
+            <p class="text-muted mt-3" style="font-size:var(--fs-label);">Deadline: March 15, 2026 • 3 days remaining</p>
+          </div>
+
+          <!-- Assigned Officer -->
+          <div class="glass-card animate-in">
+            <h2 class="text-h3 mb-2">Assigned Officer</h2>
+            <div class="officer-card">
+              <div class="avatar">RK</div>
+              <div>
+                <div style="font-weight:var(--fw-semibold);">Ramesh Kumar</div>
+                <div style="font-size:var(--fs-body-sm);color:var(--text-on-dark-secondary);">Sr. Engineer</div>
+                <div style="font-size:var(--fs-label);color:var(--text-on-dark-muted);">Road Infrastructure Dept</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="glass-card animate-in">
+            <h2 class="text-h3 mb-4">Actions</h2>
+            <div class="flex flex-col gap-3">
+              <button class="btn btn-danger btn-sm" style="width:100%;" onclick="if(window.showToast) showToast('Escalation request sent!','info')">🔺 Escalate Issue</button>
+              <button class="btn btn-ghost btn-sm" style="width:100%;">📤 Share Grievance</button>
+              <button class="btn btn-ghost btn-sm" style="width:100%;">🖨️ Print Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if (!NagaraSevaAPI.isLoggedIn()) {
+      window.location.href = '/login.html';
+    }
+  </script>
+</body>
+</html>
+

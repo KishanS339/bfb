@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BBMP Admin Dashboard — Monitor KPIs, charts, and grievance queue.">
+  <title>Admin Dashboard — NagaraSeva</title>
+  <link rel="stylesheet" href="styles/design-system.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <style>
+    .chart-container {
+      position: relative;
+    }
+    .chart-container canvas {
+      width: 100%;
+      height: 280px;
+    }
+    .queue-table {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .quick-action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+    }
+    .quick-action {
+      padding: var(--space-4);
+      text-align: center;
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: var(--fs-body-sm);
+    }
+    .quick-action:hover {
+      background: rgba(0,188,212,0.08);
+      border-color: var(--border-accent);
+    }
+    .quick-action .qa-icon {
+      font-size: 24px;
+      margin-bottom: var(--space-2);
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="index.html" class="topbar-brand">
+          <div class="brand-icon">🏛️</div>
+          <div class="brand-name">Nagara<span>Seva</span></div>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Overview</div>
+        <a href="admin-dashboard.html" class="sidebar-link active">
+          <span class="link-icon">📊</span> Dashboard
+        </a>
+        <a href="admin-grievances.html" class="sidebar-link">
+          <span class="link-icon">📋</span> Grievances
+          <span class="link-badge">24</span>
+        </a>
+        <div class="sidebar-section-label">Management</div>
+        <a href="admin-grievance-detail.html" class="sidebar-link">
+          <span class="link-icon">📝</span> Detail View
+        </a>
+        <a href="admin-insights.html" class="sidebar-link">
+          <span class="link-icon">🤖</span> AI Insights
+        </a>
+        <a href="map-view.html" class="sidebar-link">
+          <span class="link-icon">🗺️</span> City Map
+        </a>
+        <div class="sidebar-section-label">System</div>
+        <a href="#" class="sidebar-link">
+          <span class="link-icon">👥</span> Officers
+        </a>
+        <a href="#" class="sidebar-link">
+          <span class="link-icon">⚙️</span> Settings
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar sm">AO</div>
+          <div class="sidebar-user-info">
+            <div class="user-name">Admin Officer</div>
+            <div class="user-role">BBMP Zone 1</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <div class="flex items-center gap-4">
+          <button class="hamburger sidebar-toggle" style="display:none;" aria-label="Toggle sidebar">
+            <span></span><span></span><span></span>
+          </button>
+          <h1 class="page-title">Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search...">
+          </div>
+          <button class="btn btn-ghost btn-icon notif-dot">🔔</button>
+          <a href="index.html" class="btn btn-ghost btn-sm">Public Site →</a>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <!-- KPI Cards -->
+        <div class="grid-4 mb-8 stagger-children" data-skeleton="1000">
+          <div class="skeleton-wrapper">
+            <div class="grid-4">
+              <div class="skeleton skeleton-card"></div>
+              <div class="skeleton skeleton-card"></div>
+              <div class="skeleton skeleton-card"></div>
+              <div class="skeleton skeleton-card"></div>
+            </div>
+          </div>
+          <div class="content-wrapper">
+            <div class="stat-card accent animate-in">
+              <div class="stat-icon">📋</div>
+              <div class="stat-value" data-count="1248">0</div>
+              <div class="stat-label">Open Grievances</div>
+              <div class="stat-change up">↑ 12% this month</div>
+            </div>
+            <div class="stat-card success animate-in">
+              <div class="stat-icon">✅</div>
+              <div class="stat-value" data-count="9234">0</div>
+              <div class="stat-label">Resolved</div>
+              <div class="stat-change up">↑ 8% this month</div>
+            </div>
+            <div class="stat-card danger animate-in">
+              <div class="stat-icon">⚠️</div>
+              <div class="stat-value" data-count="156">0</div>
+              <div class="stat-label">Overdue</div>
+              <div class="stat-change down">↓ 5% vs last month</div>
+            </div>
+            <div class="stat-card warning animate-in">
+              <div class="stat-icon">⏱️</div>
+              <div class="stat-value" data-count="48" data-suffix="h">0</div>
+              <div class="stat-label">Avg Resolution Time</div>
+              <div class="stat-change down">↓ 3h improvement</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid-2 mb-8">
+          <div class="glass-card animate-in">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-h3">Grievances by Category</h2>
+              <div class="tabs" style="border:none;margin:0;">
+                <button class="tab-btn active" style="padding:var(--space-2) var(--space-3);">This Month</button>
+                <button class="tab-btn" style="padding:var(--space-2) var(--space-3);">Quarter</button>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="category-chart"></canvas>
+            </div>
+          </div>
+          <div class="glass-card animate-in">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-h3">Status Distribution</h2>
+            </div>
+            <div class="chart-container">
+              <canvas id="status-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trend + Queue Row -->
+        <div class="grid-2 mb-8">
+          <div class="glass-card animate-in">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-h3">Weekly Trend</h2>
+            </div>
+            <div class="chart-container">
+              <canvas id="trend-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Quick Actions + Recent -->
+          <div class="flex flex-col gap-6">
+            <div class="glass-card animate-in">
+              <h2 class="text-h3 mb-4">Quick Actions</h2>
+              <div class="quick-action-grid">
+                <a href="admin-grievances.html" class="quick-action">
+                  <div class="qa-icon">📋</div>
+                  <div>View Queue</div>
+                </a>
+                <a href="admin-insights.html" class="quick-action">
+                  <div class="qa-icon">🤖</div>
+                  <div>AI Insights</div>
+                </a>
+                <a href="map-view.html" class="quick-action">
+                  <div class="qa-icon">🗺️</div>
+                  <div>City Map</div>
+                </a>
+                <div class="quick-action" onclick="if(window.showToast) showToast('Report exported!','success')">
+                  <div class="qa-icon">📥</div>
+                  <div>Export Report</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card animate-in">
+              <h2 class="text-h3 mb-4">SLA Compliance</h2>
+              <div class="flex justify-between text-body-sm mb-2">
+                <span class="text-secondary">On-time resolution rate</span>
+                <span class="text-success" style="font-weight:var(--fw-bold);">78%</span>
+              </div>
+              <div class="progress-bar mb-4">
+                <div class="progress-fill success animated" style="width:78%;"></div>
+              </div>
+              <div class="flex justify-between text-body-sm mb-2">
+                <span class="text-secondary">Avg first response</span>
+                <span style="font-weight:var(--fw-bold);">4.2 hours</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill animated" style="width:65%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Queue Table -->
+        <div class="glass-card animate-in">
+          <div class="section-header">
+            <h2 class="text-h3">Recent Grievances Queue</h2>
+            <a href="admin-grievances.html" class="btn btn-ghost btn-sm">View All →</a>
+          </div>
+          <div class="queue-table">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Ward</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Filed</th>
+                </tr>
+              </thead>
+              <tbody id="recent-queue-body">
+                <tr><td colspan="7" style="text-align:center;padding:20px;">Loading recent grievances...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Security check
+    if (!NagaraSevaAPI.isLoggedIn()) {
+      window.location.href = '/login.html';
+    } else {
+      const user = NagaraSevaAPI.getUser();
+      if (user.role !== 'admin' && user.role !== 'officer') {
+        window.location.href = '/citizen-dashboard.html';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1) Fetch Live Data
+      try {
+        const data = await NagaraSevaAPI.getGrievances({ sort: '-createdAt', limit: 5 });
+        const tbody = document.getElementById('recent-queue-body');
+        
+        if (data.grievances && data.grievances.length > 0) {
+          tbody.innerHTML = '';
+          data.grievances.forEach(g => {
+            const date = new Date(g.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            
+            let statusBadge = 'badge-open';
+            if(g.status === 'Resolved') statusBadge = 'badge-resolved';
+            else if(g.status === 'In Progress') statusBadge = 'badge-in-progress';
+            else if(g.status === 'Escalated') statusBadge = 'badge-escalated';
+
+            let priorityBadge = 'badge-priority-medium';
+            if(g.priority === 'High') priorityBadge = 'badge-priority-high';
+            else if(g.priority === 'Low') priorityBadge = 'badge-priority-low';
+
+            let catIcon = '📋';
+            if(g.category === 'Road Damage') catIcon = '🚧';
+            else if(g.category === 'Water Supply') catIcon = '💧';
+            else if(g.category === 'Garbage') catIcon = '🗑️';
+            else if(g.category === 'Street Light') catIcon = '💡';
+            else if(g.category === 'Drainage') catIcon = '🌊';
+            else if(g.category === 'Tree Fall') catIcon = '🌳';
+
+            const ward = (g.location && g.location.ward) ? g.location.ward : '-';
+
+            tbody.innerHTML += `
+              <tr onclick="location.href='admin-grievance-detail.html?id=${g._id}'" style="cursor:pointer;">
+                <td class="text-accent">${g.grievanceId}</td>
+                <td>${g.title}</td>
+                <td>${catIcon} ${g.category.split(' ')[0]}</td>
+                <td>${ward}</td>
+                <td><span class="badge ${priorityBadge}">${g.priority}</span></td>
+                <td><span class="badge ${statusBadge}">${g.status}</span></td>
+                <td>${date}</td>
+              </tr>
+            `;
+          });
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No recent grievances found.</td></tr>`;
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('recent-queue-body').innerHTML = `<tr><td colspan="7" style="text-align:center;color:red;">Failed to load data.</td></tr>`;
+      }
+
+      // Hide Skeleton
+      document.querySelectorAll('[data-skeleton]').forEach(el => {
+        el.querySelector('.skeleton-wrapper').style.display = 'none';
+        const content = el.querySelector('.content-wrapper');
+        if (content) content.style.display = 'grid'; // or block based on layout
+      });
+
+      // Category Bar Chart
+      new BarChart('category-chart', [
+        { label: 'Road', value: 342 },
+        { label: 'Water', value: 218 },
+        { label: 'Garbage', value: 287 },
+        { label: 'Light', value: 156 },
+        { label: 'Drain', value: 198 },
+        { label: 'Tree', value: 89 }
+      ]);
+
+      // Status Doughnut Chart
+      new DoughnutChart('status-chart', [
+        { label: 'Open', value: 420 },
+        { label: 'In Progress', value: 380 },
+        { label: 'Resolved', value: 310 },
+        { label: 'Escalated', value: 78 },
+        { label: 'Closed', value: 60 }
+      ]);
+
+      // Trend Line Chart
+      new LineChart('trend-chart', [
+        {
+          name: 'Filed',
+          data: [
+            { label: 'Mon', value: 42 },
+            { label: 'Tue', value: 58 },
+            { label: 'Wed', value: 45 },
+            { label: 'Thu', value: 62 },
+            { label: 'Fri', value: 55 },
+            { label: 'Sat', value: 38 },
+            { label: 'Sun', value: 28 }
+          ]
+        },
+        {
+          name: 'Resolved',
+          data: [
+            { label: 'Mon', value: 35 },
+            { label: 'Tue', value: 48 },
+            { label: 'Wed', value: 52 },
+            { label: 'Thu', value: 44 },
+            { label: 'Fri', value: 60 },
+            { label: 'Sat', value: 42 },
+            { label: 'Sun', value: 30 }
+          ]
+        }
+      ]);
+
+      // Responsive sidebar toggle
+      const sidebarToggle = document.querySelector('.sidebar-toggle');
+      if (window.innerWidth <= 768 && sidebarToggle) {
+        sidebarToggle.style.display = 'flex';
+      }
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NagaraSeva — Bengaluru's Public Grievance Intelligence & Resolution Platform. Report, track, and resolve civic issues with AI-powered insights.">
+  <title>NagaraSeva — Public Grievance Platform for Bengaluru</title>
+  <link rel="stylesheet" href="styles/design-system.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <style>
+    .hero-stats {
+      display: flex;
+      gap: var(--space-8);
+      justify-content: center;
+      margin-top: var(--space-10);
+      flex-wrap: wrap;
+    }
+    .hero-stat {
+      text-align: center;
+    }
+    .hero-stat .value {
+      font-size: 36px;
+      font-weight: var(--fw-extrabold);
+      color: var(--color-accent);
+    }
+    .hero-stat .label {
+      font-size: var(--fs-body-sm);
+      color: var(--text-on-dark-secondary);
+      margin-top: var(--space-1);
+    }
+    .features-section {
+      padding: var(--space-14) 0;
+      position: relative;
+      z-index: var(--z-content);
+    }
+    .features-section .section-subtitle {
+      color: var(--text-on-dark-secondary);
+      max-width: 600px;
+      margin: var(--space-3) auto var(--space-10);
+      text-align: center;
+      font-size: var(--fs-body);
+    }
+    .feature-card {
+      padding: var(--space-7);
+      text-align: center;
+      cursor: default;
+    }
+    .feature-card .feature-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-lg);
+      background: rgba(0, 188, 212, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto var(--space-5);
+      transition: all var(--transition-normal);
+    }
+    .feature-card:hover .feature-icon {
+      background: rgba(0, 188, 212, 0.2);
+      transform: scale(1.1);
+      box-shadow: var(--shadow-glow);
+    }
+    .feature-card h3 {
+      font-size: var(--fs-h3);
+      font-weight: var(--fw-semibold);
+      margin-bottom: var(--space-3);
+    }
+    .feature-card p {
+      font-size: var(--fs-body-sm);
+      color: var(--text-on-dark-secondary);
+      line-height: var(--lh-relaxed);
+    }
+    .how-section {
+      padding: var(--space-14) 0;
+      background: rgba(255,255,255,0.02);
+      position: relative;
+      z-index: var(--z-content);
+    }
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-6);
+      margin-top: var(--space-10);
+    }
+    .how-step {
+      text-align: center;
+      position: relative;
+    }
+    .how-step .step-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--fs-h3);
+      font-weight: var(--fw-bold);
+      margin: 0 auto var(--space-5);
+      box-shadow: var(--shadow-glow);
+    }
+    .how-step h3 {
+      font-size: var(--fs-body);
+      font-weight: var(--fw-semibold);
+      margin-bottom: var(--space-2);
+    }
+    .how-step p {
+      font-size: var(--fs-body-sm);
+      color: var(--text-on-dark-secondary);
+    }
+    .cta-section {
+      padding: var(--space-14) 0;
+      text-align: center;
+      position: relative;
+      z-index: var(--z-content);
+    }
+    .cta-card {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: var(--space-11) var(--space-8);
+      background: linear-gradient(135deg, rgba(26,35,126,0.3), rgba(0,188,212,0.1));
+    }
+    .footer {
+      padding: var(--space-8) 0;
+      border-top: 1px solid var(--border-subtle);
+      position: relative;
+      z-index: var(--z-content);
+    }
+    .footer-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+    .footer-links {
+      display: flex;
+      gap: var(--space-5);
+    }
+    .footer-links a {
+      font-size: var(--fs-body-sm);
+      color: var(--text-on-dark-secondary);
+    }
+    .footer-copy {
+      font-size: var(--fs-body-sm);
+      color: var(--text-on-dark-muted);
+    }
+    @media (max-width: 768px) {
+      .how-steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .hero-stats {
+        gap: var(--space-5);
+      }
+      .hero-stat .value {
+        font-size: 28px;
+      }
+    }
+    @media (max-width: 480px) {
+      .how-steps {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar Nav -->
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="topbar-brand">
+        <div class="brand-icon">🏛️</div>
+        <div class="brand-name">Nagara<span>Seva</span></div>
+      </a>
+      <div class="topbar-nav">
+        <a href="index.html" class="nav-link active" data-i18n="nav.home">Home</a>
+        <a href="citizen-dashboard.html" class="nav-link" data-i18n="nav.my_grievances">My Grievances</a>
+        <a href="report-grievance.html" class="nav-link" data-i18n="nav.report_issue">Report Issue</a>
+        <a href="map-view.html" class="nav-link" data-i18n="nav.city_map">City Map</a>
+      </div>
+      <div class="topbar-actions">
+        <!-- Language Switcher -->
+        <select id="lang-switcher" class="form-select" style="padding:4px 8px; width:auto; border-radius:4px; font-size:12px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white;">
+          <option value="en" style="color:black;">English</option>
+          <option value="kn" style="color:black;">ಕನ್ನಡ</option>
+        </select>
+        <a href="admin-dashboard.html" class="btn btn-ghost btn-sm" data-i18n="nav.admin">Admin</a>
+        <a href="report-grievance.html" class="btn btn-primary btn-sm" data-i18n="nav.report_issue">Report Issue</a>
+        <button class="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav">
+    <a href="index.html" class="nav-link active">Home</a>
+    <a href="citizen-dashboard.html" class="nav-link">My Grievances</a>
+    <a href="report-grievance.html" class="nav-link">Report Issue</a>
+    <a href="map-view.html" class="nav-link">City Map</a>
+    <a href="admin-dashboard.html" class="nav-link">Admin Panel</a>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg">
+      <canvas id="hero-particles" data-particles data-count="100" style="width:100%;height:100%;position:absolute;top:0;left:0;"></canvas>
+    </div>
+    <div class="hero-content">
+      <div class="text-label text-accent mb-4 animate-in" style="letter-spacing: 2px;" data-i18n="hero.label">EMPOWERING BENGALURU CITIZENS</div>
+      <h1 class="hero-title animate-in">
+        Your Voice.<br><span class="highlight">Your City.</span><br>Your Power.
+      </h1>
+      <p class="hero-subtitle animate-in" data-i18n="hero.subtitle">
+        Report civic grievances, track resolutions in real-time, and help build a smarter, cleaner Bengaluru with AI-powered insights.
+      </p>
+      <div class="hero-actions animate-in">
+        <a href="report-grievance.html" class="btn btn-primary btn-lg btn-glow" data-i18n="hero.report_btn">
+          🚨 Report a Grievance
+        </a>
+        <a href="citizen-dashboard.html" class="btn btn-secondary btn-lg" data-i18n="hero.track_btn">
+          📋 Track My Issues
+        </a>
+      </div>
+      <div class="hero-stats animate-in">
+        <div class="hero-stat">
+          <div class="value" data-count="12847" data-duration="2000">0</div>
+          <div class="label">Grievances Filed</div>
+        </div>
+        <div class="hero-stat">
+          <div class="value" data-count="9234" data-duration="2000">0</div>
+          <div class="label">Issues Resolved</div>
+        </div>
+        <div class="hero-stat">
+          <div class="value" data-count="198" data-duration="2000">0</div>
+          <div class="label">Wards Covered</div>
+        </div>
+        <div class="hero-stat">
+          <div class="value" data-count="48" data-suffix="h" data-duration="2000">0</div>
+          <div class="label">Avg Resolution</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <h2 class="text-h1 animate-in" style="text-align:center;">Why NagaraSeva?</h2>
+      <p class="section-subtitle animate-in">A next-gen civic grievance platform built for the citizens and administrators of Bengaluru.</p>
+      <div class="grid-3 stagger-children">
+        <div class="glass-card feature-card tilt-card animate-in">
+          <div class="tilt-card-inner">
+            <div class="tilt-shine"></div>
+            <div class="feature-icon">📸</div>
+            <h3>Easy Reporting</h3>
+            <p>Report issues with photos, location, and category in under 60 seconds. No paperwork needed.</p>
+          </div>
+        </div>
+        <div class="glass-card feature-card tilt-card animate-in">
+          <div class="tilt-card-inner">
+            <div class="tilt-shine"></div>
+            <div class="feature-icon">🔄</div>
+            <h3>Real-Time Tracking</h3>
+            <p>Track your grievance from submission to resolution with live status updates and notifications.</p>
+          </div>
+        </div>
+        <div class="glass-card feature-card tilt-card animate-in">
+          <div class="tilt-card-inner">
+            <div class="tilt-shine"></div>
+            <div class="feature-icon">🗺️</div>
+            <h3>City Map View</h3>
+            <p>See all reported issues across Bengaluru on an interactive ward map with heatmap visualization.</p>
+          </div>
+        </div>
+        <div class="glass-card feature-card tilt-card animate-in">
+          <div class="tilt-card-inner">
+            <div class="tilt-shine"></div>
+            <div class="feature-icon">🤖</div>
+            <h3>AI-Powered Insights</h3>
+            <p>Smart categorization, priority prediction, and pattern detection powered by AI analytics.</p>
+          </div>
+        </div>
+        <div class="glass-card feature-card tilt-card animate-in">
+          <div class="tilt-card-inner">
+            <div class="tilt-shine"></div>
+            <div class="feature-icon">⚡</div>
+            <h3>Fast Resolution</h3>
+            <p>Auto-routing to relevant departments and SLA tracking ensure issues get resolved quickly.</p>
+          </div>
+        </div>
+        <div class="glass-card feature-card tilt-card animate-in">
+          <div class="tilt-card-inner">
+            <div class="tilt-shine"></div>
+            <div class="feature-icon">📊</div>
+            <h3>Transparency</h3>
+            <p>Public dashboards show resolution rates, department performance, and grievance trends.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-section">
+    <div class="container">
+      <h2 class="text-h1 animate-in" style="text-align:center;">How It Works</h2>
+      <div class="how-steps stagger-children">
+        <div class="how-step animate-in">
+          <div class="step-number">1</div>
+          <h3>Report</h3>
+          <p>Submit your civic issue with a photo, location, and description.</p>
+        </div>
+        <div class="how-step animate-in">
+          <div class="step-number">2</div>
+          <h3>AI Routes</h3>
+          <p>Our AI categorizes and routes your grievance to the correct BBMP department.</p>
+        </div>
+        <div class="how-step animate-in">
+          <div class="step-number">3</div>
+          <h3>Track</h3>
+          <p>Follow your grievance through every stage from open to resolved.</p>
+        </div>
+        <div class="how-step animate-in">
+          <div class="step-number">4</div>
+          <h3>Resolved</h3>
+          <p>Get notified when your issue is resolved and rate the experience.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="glass-card cta-card animate-in">
+        <h2 class="text-h1 mb-4">Ready to Make a Difference?</h2>
+        <p class="text-secondary mb-6" style="font-size: var(--fs-body); max-width: 480px; margin-left:auto; margin-right:auto;">
+          Join thousands of Bengaluru citizens who are using NagaraSeva to build a better city for everyone.
+        </p>
+        <div class="flex justify-center gap-4" style="flex-wrap:wrap;">
+          <a href="report-grievance.html" class="btn btn-primary btn-lg btn-glow">Report an Issue Now</a>
+          <a href="map-view.html" class="btn btn-secondary btn-lg">Explore City Map</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="brand-icon" style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--color-primary),var(--color-accent));display:flex;align-items:center;justify-content:center;font-size:14px;">🏛️</div>
+          <span style="font-weight:var(--fw-bold);">NagaraSeva</span>
+        </div>
+        <p class="footer-copy">© 2026 NagaraSeva. Built for Bengaluru, by Bengaluru.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+        <a href="admin-dashboard.html">Admin</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Login-first: redirect to login if not signed in
+    if (!NagaraSevaAPI.isLoggedIn()) {
+      window.location.href = '/login.html';
+    }
+  </script>
+</body>
+</html>

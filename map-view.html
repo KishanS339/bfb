@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore civic grievances across Bengaluru wards on an interactive map visualization.">
+  <title>City Map — NagaraSeva</title>
+  <link rel="stylesheet" href="styles/design-system.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    .map-page {
+      display: flex;
+      height: calc(100vh - var(--topbar-height));
+    }
+    .map-sidebar {
+      width: 320px;
+      background: rgba(13,13,26,0.95);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid var(--border-subtle);
+      padding: var(--space-6);
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .map-canvas-wrapper {
+      flex: 1;
+      position: relative;
+      background: var(--bg-dark);
+      min-height: 400px;
+    }
+    #city-map {
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    .map-overlay-stats {
+      position: absolute;
+      top: var(--space-5);
+      right: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      z-index: 5;
+    }
+    .map-stat-pill {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: rgba(13,13,26,0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      font-size: var(--fs-body-sm);
+    }
+    .map-stat-pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .ward-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+    .ward-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-subtle);
+      transition: all var(--transition-fast);
+      cursor: pointer;
+      font-size: var(--fs-body-sm);
+    }
+    .ward-item:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: var(--border-accent);
+    }
+    .ward-item .ward-count {
+      font-weight: var(--fw-bold);
+      color: var(--color-accent);
+    }
+    .sidebar-section {
+      margin-bottom: var(--space-6);
+    }
+    .sidebar-section h3 {
+      font-size: var(--fs-body-sm);
+      font-weight: var(--fw-semibold);
+      color: var(--text-on-dark-secondary);
+      margin-bottom: var(--space-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: var(--fs-label);
+    }
+    @media (max-width: 768px) {
+      .map-page {
+        flex-direction: column-reverse;
+      }
+      .map-sidebar {
+        width: 100%;
+        max-height: 40vh;
+      }
+      .map-canvas-wrapper {
+        min-height: 50vh;
+      }
+      .map-overlay-stats {
+        top: var(--space-3);
+        right: var(--space-3);
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="topbar-brand">
+        <div class="brand-icon">🏛️</div>
+        <div class="brand-name">Nagara<span>Seva</span></div>
+      </a>
+      <div class="topbar-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="citizen-dashboard.html" class="nav-link">My Grievances</a>
+        <a href="report-grievance.html" class="nav-link">Report Issue</a>
+        <a href="map-view.html" class="nav-link active">City Map</a>
+      </div>
+      <div class="topbar-actions">
+        <a href="report-grievance.html" class="btn btn-primary btn-sm">+ Report Issue</a>
+        <button class="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+  <div class="mobile-nav">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="citizen-dashboard.html" class="nav-link">My Grievances</a>
+    <a href="report-grievance.html" class="nav-link">Report Issue</a>
+    <a href="map-view.html" class="nav-link active">City Map</a>
+  </div>
+
+  <div class="map-page">
+    <!-- Sidebar Filters -->
+    <div class="map-sidebar">
+      <h2 class="text-h2 mb-2">City Map</h2>
+      <p class="text-secondary text-body-sm mb-6">Grievance distribution across Bengaluru wards</p>
+
+      <div class="sidebar-section">
+        <h3>Filter by Category</h3>
+        <div class="filter-pills" style="flex-direction:column;">
+          <button class="filter-pill active" style="text-align:left;">All Categories</button>
+          <button class="filter-pill" style="text-align:left;">🚧 Road Damage</button>
+          <button class="filter-pill" style="text-align:left;">💧 Water Supply</button>
+          <button class="filter-pill" style="text-align:left;">🗑️ Garbage</button>
+          <button class="filter-pill" style="text-align:left;">💡 Street Light</button>
+          <button class="filter-pill" style="text-align:left;">🌊 Drainage</button>
+          <button class="filter-pill" style="text-align:left;">🌳 Tree Fall</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Filter by Status</h3>
+        <div class="filter-pills">
+          <button class="filter-pill active" data-filter-group="single">All</button>
+          <button class="filter-pill" data-filter-group="single">Open</button>
+          <button class="filter-pill" data-filter-group="single">Resolved</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sidebar-section">
+        <h3>Top Wards by Grievances</h3>
+        <div class="ward-list" id="ward-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sidebar-section">
+        <h3>Summary</h3>
+        <div class="flex flex-col gap-3">
+          <div class="flex justify-between text-body-sm">
+            <span class="text-secondary">Total Pins</span>
+            <span style="font-weight:var(--fw-bold);">45</span>
+          </div>
+          <div class="flex justify-between text-body-sm">
+            <span class="text-secondary">Open Issues</span>
+            <span class="text-warning" style="font-weight:var(--fw-bold);">27</span>
+          </div>
+          <div class="flex justify-between text-body-sm">
+            <span class="text-secondary">Resolved</span>
+            <span class="text-success" style="font-weight:var(--fw-bold);">18</span>
+          </div>
+          <div class="flex justify-between text-body-sm">
+            <span class="text-secondary">Wards Active</span>
+            <span style="font-weight:var(--fw-bold);">20</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Container -->
+    <div class="map-canvas-wrapper">
+      <div id="city-map"></div>
+      <div class="map-overlay-stats">
+        <div class="map-stat-pill">
+          <div class="dot" style="background:var(--color-danger);"></div>
+          <span>Road Damage</span>
+        </div>
+        <div class="map-stat-pill">
+          <div class="dot" style="background:var(--color-accent);"></div>
+          <span>Water Supply</span>
+        </div>
+        <div class="map-stat-pill">
+          <div class="dot" style="background:var(--color-warning);"></div>
+          <span>Garbage</span>
+        </div>
+        <div class="map-stat-pill">
+          <div class="dot" style="background:#FFB74D;"></div>
+          <span>Street Light</span>
+        </div>
+        <div class="map-stat-pill">
+          <div class="dot" style="background:#303F9F;"></div>
+          <span>Drainage</span>
+        </div>
+        <div class="map-stat-pill">
+          <div class="dot" style="background:var(--color-success);"></div>
+          <span>Tree Fall</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if (!NagaraSevaAPI.isLoggedIn()) {
+      window.location.href = '/login.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const map = new MapVisualization('city-map');
+
+      // Populate ward list
+      const wardList = document.getElementById('ward-list');
+      if (map && map.wards) {
+        const sorted = [...map.wards].sort((a, b) => b.grievances - a.grievances);
+        sorted.slice(0, 8).forEach(ward => {
+          const item = document.createElement('div');
+          item.className = 'ward-item';
+          item.innerHTML = `<span>${ward.name}</span><span class="ward-count">${ward.grievances}</span>`;
+          wardList.appendChild(item);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+

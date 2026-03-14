@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create a new account — NagaraSeva Public Grievance Platform.">
+  <title>Create Account — NagaraSeva</title>
+  <link rel="stylesheet" href="styles/design-system.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+      padding: var(--space-6);
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-page::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,188,212,0.12), transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .auth-page::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(26,35,126,0.2), transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    #particle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 10;
+    }
+    .auth-brand {
+      text-align: center;
+      margin-bottom: var(--space-8);
+    }
+    .auth-brand .brand-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-3);
+    }
+    .auth-brand .brand-title {
+      font-size: var(--fs-h1);
+      font-weight: var(--fw-bold);
+      color: #fff;
+    }
+    .auth-brand .brand-title span {
+      color: var(--color-accent);
+    }
+    .auth-brand .brand-subtitle {
+      font-size: var(--fs-body-sm);
+      color: var(--text-on-dark-secondary);
+      margin-top: var(--space-2);
+    }
+    .auth-card {
+      background: rgba(30, 30, 50, 0.95);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+    .auth-tabs {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-7);
+      background: rgba(255,255,255,0.05);
+      border-radius: var(--radius-md);
+      padding: 4px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: var(--space-3) var(--space-4);
+      border: none;
+      background: transparent;
+      color: var(--text-on-dark-secondary);
+      font-family: var(--font-family);
+      font-size: var(--fs-body-sm);
+      font-weight: var(--fw-semibold);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .auth-tab.active {
+      background: var(--color-accent);
+      color: #fff;
+    }
+    .auth-tab:hover:not(.active) {
+      background: rgba(255,255,255,0.08);
+    }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+    .auth-error {
+      display: none;
+      padding: var(--space-3) var(--space-4);
+      background: rgba(213,0,0,0.15);
+      border: 1px solid rgba(213,0,0,0.3);
+      border-radius: var(--radius-md);
+      font-size: var(--fs-body-sm);
+      color: #ff5252;
+    }
+    .auth-error.show { display: block; }
+    .auth-success {
+      display: none;
+      padding: var(--space-3) var(--space-4);
+      background: rgba(0,200,83,0.15);
+      border: 1px solid rgba(0,200,83,0.3);
+      border-radius: var(--radius-md);
+      font-size: var(--fs-body-sm);
+      color: #69f0ae;
+    }
+    .auth-success.show { display: block; }
+    .role-select {
+      display: flex;
+      gap: var(--space-3);
+    }
+    .role-option {
+      flex: 1;
+      padding: var(--space-4);
+      text-align: center;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: var(--fs-body-sm);
+      color: var(--text-on-dark-secondary);
+    }
+    .role-option:hover {
+      border-color: rgba(0,188,212,0.3);
+    }
+    .role-option.selected {
+      border-color: var(--color-accent);
+      background: rgba(0,188,212,0.1);
+      color: #fff;
+    }
+    .role-option .role-icon { font-size: 24px; margin-bottom: var(--space-1); }
+    .demo-creds {
+      text-align: center;
+      margin-top: var(--space-6);
+      padding-top: var(--space-5);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .demo-creds h4 {
+      font-size: var(--fs-label);
+      color: rgba(255,255,255,0.4);
+      margin-bottom: var(--space-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .cred-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--fs-label);
+      background: rgba(255,255,255,0.04);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-2);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+      border: 1px solid transparent;
+    }
+    .cred-item:hover {
+      background: rgba(0,188,212,0.1);
+      border-color: rgba(0,188,212,0.2);
+    }
+    .cred-item .cred-type {
+      font-weight: var(--fw-semibold);
+      color: var(--color-accent);
+    }
+    .cred-item .cred-info {
+      color: var(--text-on-dark-secondary);
+    }
+    @media (max-width: 480px) {
+      .auth-card { padding: var(--space-6); }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+    <canvas id="particle-canvas" data-particles data-count="50"></canvas>
+
+    <div class="auth-container">
+      <div class="auth-brand">
+        <div class="brand-icon">🏛️</div>
+        <div class="brand-title">Nagara<span>Seva</span></div>
+        <div class="brand-subtitle">Public Grievance Intelligence & Resolution Platform</div>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-error" id="auth-error"></div>
+        <div class="auth-success" id="auth-success"></div>
+
+        <!-- Signup Form -->
+        <form class="auth-form" id="signup-form">
+          <h2 style="color:white; margin-bottom: 20px; font-size: 24px; text-align: center;" data-i18n="auth.signup.title">Create Account</h2>
+          <div class="form-group">
+            <label class="form-label" data-i18n="auth.fullname">Full Name</label>
+            <input type="text" class="form-input" id="signup-name" placeholder="Your full name" data-i18n="auth.fullname" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="auth.email">Email</label>
+            <input type="email" class="form-input" id="signup-email" placeholder="you@example.com" data-i18n="auth.email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="auth.phone">Phone</label>
+            <input type="tel" class="form-input" id="signup-phone" placeholder="+91 98765 43210" data-i18n="auth.phone">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="auth.password">Password</label>
+            <input type="password" class="form-input" id="signup-password" placeholder="Min 6 characters" data-i18n="auth.password" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label class="form-label">I am a</label>
+            <div class="role-select">
+              <div class="role-option selected" data-role="citizen">
+                <div class="role-icon">🏠</div>
+                <div>Citizen</div>
+              </div>
+              <div class="role-option" data-role="officer">
+                <div class="role-icon">👔</div>
+                <div>Officer</div>
+              </div>
+            </div>
+            <input type="hidden" id="signup-role" value="citizen">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;padding:14px;" id="signup-btn" data-i18n="auth.signup.title">Create Account →</button>
+        </form>
+
+        <p style="text-align:center;margin-top:20px;color:rgba(255,255,255,0.7);font-size:14px;">
+          Already have an account? <a href="login.html" style="color:var(--color-accent);font-weight:600;text-decoration:none;">Sign in here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/particles.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script>
+    // Role selection
+    document.querySelectorAll('.role-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        document.getElementById('signup-role').value = opt.dataset.role;
+      });
+    });
+
+    function showError(msg) {
+      const el = document.getElementById('auth-error');
+      el.textContent = msg;
+      el.classList.add('show');
+      document.getElementById('auth-success').classList.remove('show');
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('auth-success');
+      el.textContent = msg;
+      el.classList.add('show');
+      document.getElementById('auth-error').classList.remove('show');
+    }
+
+    function hideMessages() {
+      document.getElementById('auth-error').classList.remove('show');
+      document.getElementById('auth-success').classList.remove('show');
+    }
+
+
+
+    // Signup
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const phone = document.getElementById('signup-phone').value;
+      const password = document.getElementById('signup-password').value;
+      const role = document.getElementById('signup-role').value;
+      const btn = document.getElementById('signup-btn');
+      btn.textContent = 'Creating account...';
+      btn.disabled = true;
+
+      try {
+        const data = await NagaraSevaAPI.signup(name, email, password, phone);
+        showSuccess('Account created! Redirecting...');
+        setTimeout(() => {
+          if (data.user.role === 'admin' || data.user.role === 'officer') {
+            window.location.href = '/admin-dashboard.html';
+          } else {
+            window.location.href = '/citizen-dashboard.html';
+          }
+        }, 800);
+      } catch (err) {
+        showError(err.message);
+        btn.textContent = 'Create Account →';
+        btn.disabled = false;
+      }
+    });
+
+    // If already logged in, redirect
+    if (NagaraSevaAPI.isLoggedIn()) {
+      const user = NagaraSevaAPI.getUser();
+      if (user && (user.role === 'admin' || user.role === 'officer')) {
+        window.location.href = '/admin-dashboard.html';
+      } else {
+        window.location.href = '/citizen-dashboard.html';
+      }
+    }
+  </script>
+</body>
+</html>

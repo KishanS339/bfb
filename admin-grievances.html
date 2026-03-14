@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BBMP Admin — Manage all civic grievances with filters, search, and batch actions.">
+  <title>Manage Grievances — NagaraSeva Admin</title>
+  <link rel="stylesheet" href="styles/design-system.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <style>
+    .filters-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-6);
+    }
+    .filters-bar .form-select {
+      width: auto;
+      min-width: 160px;
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--fs-label);
+    }
+    .batch-bar {
+      display: none;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-3) var(--space-5);
+      background: rgba(0,188,212,0.08);
+      border: 1px solid rgba(0,188,212,0.2);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-4);
+      font-size: var(--fs-body-sm);
+    }
+    .batch-bar.show { display: flex; }
+    .table-wrapper {
+      overflow-x: auto;
+    }
+    .data-table .row-checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--color-accent);
+      cursor: pointer;
+    }
+    .table-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: var(--space-5);
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+    .results-info {
+      font-size: var(--fs-body-sm);
+      color: var(--text-on-dark-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="index.html" class="topbar-brand">
+          <div class="brand-icon">🏛️</div>
+          <div class="brand-name">Nagara<span>Seva</span></div>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Overview</div>
+        <a href="admin-dashboard.html" class="sidebar-link">
+          <span class="link-icon">📊</span> Dashboard
+        </a>
+        <a href="admin-grievances.html" class="sidebar-link active">
+          <span class="link-icon">📋</span> Grievances
+          <span class="link-badge">24</span>
+        </a>
+        <div class="sidebar-section-label">Management</div>
+        <a href="admin-grievance-detail.html" class="sidebar-link">
+          <span class="link-icon">📝</span> Detail View
+        </a>
+        <a href="admin-insights.html" class="sidebar-link">
+          <span class="link-icon">🤖</span> AI Insights
+        </a>
+        <a href="map-view.html" class="sidebar-link">
+          <span class="link-icon">🗺️</span> City Map
+        </a>
+        <div class="sidebar-section-label">System</div>
+        <a href="#" class="sidebar-link">
+          <span class="link-icon">👥</span> Officers
+        </a>
+        <a href="#" class="sidebar-link">
+          <span class="link-icon">⚙️</span> Settings
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar sm">AO</div>
+          <div class="sidebar-user-info">
+            <div class="user-name">Admin Officer</div>
+            <div class="user-role">BBMP Zone 1</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <div class="flex items-center gap-4">
+          <button class="hamburger sidebar-toggle" style="display:none;" aria-label="Toggle sidebar">
+            <span></span><span></span><span></span>
+          </button>
+          <h1 class="page-title">Grievances</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost btn-icon notif-dot">🔔</button>
+          <a href="index.html" class="btn btn-ghost btn-sm">Public Site →</a>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <!-- Quick Stats Row -->
+        <div class="grid-4 mb-6 stagger-children">
+          <div class="stat-card accent animate-in">
+            <div class="stat-value" data-count="1248" style="font-size:24px;">0</div>
+            <div class="stat-label">Total Open</div>
+          </div>
+          <div class="stat-card warning animate-in">
+            <div class="stat-value" data-count="380" style="font-size:24px;">0</div>
+            <div class="stat-label">In Progress</div>
+          </div>
+          <div class="stat-card danger animate-in">
+            <div class="stat-value" data-count="156" style="font-size:24px;">0</div>
+            <div class="stat-label">Overdue</div>
+          </div>
+          <div class="stat-card success animate-in">
+            <div class="stat-value" data-count="9234" style="font-size:24px;">0</div>
+            <div class="stat-label">Resolved Total</div>
+          </div>
+        </div>
+
+        <div class="glass-card animate-in">
+          <!-- Search & Filters -->
+          <div class="section-header">
+            <h2 class="text-h3">All Grievances</h2>
+            <div class="search-bar">
+              <span class="search-icon">🔍</span>
+              <input type="text" placeholder="Search by ID, title, ward..." data-search-target=".data-table tbody tr">
+            </div>
+          </div>
+
+          <div class="filters-bar">
+            <select class="form-select">
+              <option>All Status</option>
+              <option>Open</option>
+              <option>In Progress</option>
+              <option>Resolved</option>
+              <option>Escalated</option>
+              <option>Closed</option>
+            </select>
+            <select class="form-select">
+              <option>All Categories</option>
+              <option>Road Damage</option>
+              <option>Water Supply</option>
+              <option>Garbage</option>
+              <option>Street Light</option>
+              <option>Drainage</option>
+              <option>Tree Fall</option>
+            </select>
+            <select class="form-select">
+              <option>All Wards</option>
+              <option>Ward 85</option>
+              <option>Ward 96</option>
+              <option>Ward 113</option>
+              <option>Ward 120</option>
+              <option>Ward 150</option>
+              <option>Ward 174</option>
+              <option>Ward 194</option>
+            </select>
+            <select class="form-select">
+              <option>All Priority</option>
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="if(window.showToast) showToast('Filters cleared','info')">Clear Filters</button>
+          </div>
+
+          <!-- Batch Action Bar -->
+          <div class="batch-bar" id="batch-bar">
+            <span><strong id="selected-count">0</strong> selected</span>
+            <button class="btn btn-sm btn-primary" onclick="if(window.showToast) showToast('Assigned to officer','success')">Assign</button>
+            <button class="btn btn-sm btn-secondary" onclick="if(window.showToast) showToast('Status changed','success')">Change Status</button>
+            <button class="btn btn-sm btn-danger" onclick="if(window.showToast) showToast('Escalated','info')">Escalate</button>
+          </div>
+
+          <!-- Data Table -->
+          <div class="table-wrapper">
+            <table class="data-table" id="grievance-table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" class="row-checkbox" id="select-all"></th>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Ward</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Assigned</th>
+                  <th>Filed</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="grievance-table-body">
+                <tr><td colspan="10" style="text-align:center;padding:20px;">Loading grievances...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer -->
+          <div class="table-actions">
+            <span class="results-info">Showing 1–8 of 1,248 grievances</span>
+            <div class="pagination">
+              <button class="page-btn">←</button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">...</button>
+              <button class="page-btn">156</button>
+              <button class="page-btn">→</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Security check
+    if (!NagaraSevaAPI.isLoggedIn()) {
+      window.location.href = '/login.html';
+    } else {
+      const user = NagaraSevaAPI.getUser();
+      if (user.role !== 'admin' && user.role !== 'officer') {
+        window.location.href = '/citizen-dashboard.html';
+      }
+    }
+
+    // Select all / batch actions
+    const selectAll = document.getElementById('select-all');
+    const batchBar = document.getElementById('batch-bar');
+    const selectedCount = document.getElementById('selected-count');
+
+    function updateBatchBar() {
+      const checked = document.querySelectorAll('.row-check:checked').length;
+      selectedCount.textContent = checked;
+      batchBar.classList.toggle('show', checked > 0);
+    }
+
+    if (selectAll) {
+      selectAll.addEventListener('change', () => {
+        const rowChecks = document.querySelectorAll('.row-check');
+        rowChecks.forEach(cb => cb.checked = selectAll.checked);
+        updateBatchBar();
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Fetch Live Data
+      try {
+        const data = await NagaraSevaAPI.getGrievances({ sort: '-createdAt' });
+        const tbody = document.getElementById('grievance-table-body');
+        
+        if (data.grievances && data.grievances.length > 0) {
+          tbody.innerHTML = '';
+          data.grievances.forEach(g => {
+            const date = new Date(g.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            
+            let statusBadge = 'badge-open';
+            if(g.status === 'Resolved') statusBadge = 'badge-resolved';
+            else if(g.status === 'In Progress') statusBadge = 'badge-in-progress';
+            else if(g.status === 'Escalated') statusBadge = 'badge-escalated';
+
+            let priorityBadge = 'badge-priority-medium';
+            if(g.priority === 'High') priorityBadge = 'badge-priority-high';
+            else if(g.priority === 'Low') priorityBadge = 'badge-priority-low';
+
+            let catIcon = '📋';
+            if(g.category === 'Road Damage') catIcon = '🚧';
+            else if(g.category === 'Water Supply') catIcon = '💧';
+            else if(g.category === 'Garbage') catIcon = '🗑️';
+            else if(g.category === 'Street Light') catIcon = '💡';
+            else if(g.category === 'Drainage') catIcon = '🌊';
+            else if(g.category === 'Tree Fall') catIcon = '🌳';
+
+            const ward = (g.location && g.location.ward) ? g.location.ward : '-';
+            const assigned = g.assignedOfficer ? 'Assigned' : '—'; // Would need populated officer name ideally
+
+            tbody.innerHTML += `
+              <tr>
+                <td><input type="checkbox" class="row-checkbox row-check"></td>
+                <td class="text-accent">${g.grievanceId}</td>
+                <td>${g.title}</td>
+                <td>${catIcon} ${g.category.split(' ')[0]}</td>
+                <td>${ward}</td>
+                <td><span class="badge ${priorityBadge}">${g.priority}</span></td>
+                <td><span class="badge ${statusBadge}">${g.status}</span></td>
+                <td>${assigned}</td>
+                <td>${date}</td>
+                <td><a href="admin-grievance-detail.html?id=${g._id}" class="btn btn-ghost btn-sm">View</a></td>
+              </tr>
+            `;
+          });
+
+          // Re-bind row-check event listeners
+          document.querySelectorAll('.row-check').forEach(cb => cb.addEventListener('change', updateBatchBar));
+
+        } else {
+          tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;">No grievances found.</td></tr>`;
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('grievance-table-body').innerHTML = `<tr><td colspan="10" style="text-align:center;color:red;">Failed to load data.</td></tr>`;
+      }
+      
+      // Responsive sidebar
+      if (window.innerWidth <= 768) {
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (toggle) toggle.style.display = 'flex';
+      }
+    });
+  </script>
+</body>
+</html>
+

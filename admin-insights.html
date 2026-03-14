@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BBMP Admin — AI-powered analytics, trend detection, and predicted hotspots.">
+  <title>AI Insights — NagaraSeva Admin</title>
+  <link rel="stylesheet" href="styles/design-system.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <style>
+    .insight-card {
+      padding: var(--space-6);
+    }
+    .insight-card .insight-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-5);
+    }
+    .insight-card .insight-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 2px 8px;
+      font-size: var(--fs-label);
+      font-weight: var(--fw-medium);
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, rgba(0,188,212,0.2), rgba(26,35,126,0.2));
+      color: var(--color-accent-light);
+      border: 1px solid rgba(0,188,212,0.3);
+    }
+    .hotspot-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .hotspot-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      transition: all var(--transition-fast);
+    }
+    .hotspot-item:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: var(--border-accent);
+    }
+    .hotspot-rank {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--fw-bold);
+      font-size: var(--fs-body-sm);
+      flex-shrink: 0;
+    }
+    .hotspot-rank.r1 { background: rgba(213,0,0,0.2); color: var(--color-danger-light); }
+    .hotspot-rank.r2 { background: rgba(255,111,0,0.2); color: var(--color-warning-light); }
+    .hotspot-rank.r3 { background: rgba(0,188,212,0.2); color: var(--color-accent-light); }
+    .prediction-card {
+      border-left: 3px solid var(--color-accent);
+      padding: var(--space-4) var(--space-5);
+      background: rgba(0,188,212,0.04);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-bottom: var(--space-3);
+    }
+    .prediction-card .pred-title {
+      font-weight: var(--fw-semibold);
+      font-size: var(--fs-body-sm);
+      margin-bottom: var(--space-1);
+    }
+    .prediction-card .pred-detail {
+      font-size: var(--fs-label);
+      color: var(--text-on-dark-secondary);
+    }
+    .prediction-card .pred-confidence {
+      font-size: var(--fs-label);
+      color: var(--color-accent);
+      font-weight: var(--fw-medium);
+      margin-top: var(--space-2);
+    }
+    .chart-container canvas {
+      width: 100%;
+      height: 280px;
+    }
+    .sla-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .sla-row:last-child { border-bottom: none; }
+    .sla-dept {
+      width: 140px;
+      font-size: var(--fs-body-sm);
+      font-weight: var(--fw-medium);
+      flex-shrink: 0;
+    }
+    .sla-bar-wrap { flex: 1; }
+    .sla-pct {
+      width: 50px;
+      text-align: right;
+      font-size: var(--fs-body-sm);
+      font-weight: var(--fw-bold);
+    }
+    .anomaly-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: rgba(213,0,0,0.05);
+      border: 1px solid rgba(213,0,0,0.15);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+      font-size: var(--fs-body-sm);
+    }
+    .anomaly-item .anomaly-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="index.html" class="topbar-brand">
+          <div class="brand-icon">🏛️</div>
+          <div class="brand-name">Nagara<span>Seva</span></div>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Overview</div>
+        <a href="admin-dashboard.html" class="sidebar-link"><span class="link-icon">📊</span> Dashboard</a>
+        <a href="admin-grievances.html" class="sidebar-link"><span class="link-icon">📋</span> Grievances <span class="link-badge">24</span></a>
+        <div class="sidebar-section-label">Management</div>
+        <a href="admin-grievance-detail.html" class="sidebar-link"><span class="link-icon">📝</span> Detail View</a>
+        <a href="admin-insights.html" class="sidebar-link active"><span class="link-icon">🤖</span> AI Insights</a>
+        <a href="map-view.html" class="sidebar-link"><span class="link-icon">🗺️</span> City Map</a>
+        <div class="sidebar-section-label">System</div>
+        <a href="#" class="sidebar-link"><span class="link-icon">👥</span> Officers</a>
+        <a href="#" class="sidebar-link"><span class="link-icon">⚙️</span> Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar sm">AO</div>
+          <div class="sidebar-user-info">
+            <div class="user-name">Admin Officer</div>
+            <div class="user-role">BBMP Zone 1</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <div class="flex items-center gap-4">
+          <button class="hamburger sidebar-toggle" style="display:none;" aria-label="Toggle sidebar">
+            <span></span><span></span><span></span>
+          </button>
+          <h1 class="page-title">AI Insights</h1>
+          <span class="ai-badge">🤖 AI-Powered</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost btn-icon notif-dot">🔔</button>
+          <a href="admin-dashboard.html" class="btn btn-ghost btn-sm">← Dashboard</a>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <!-- AI KPI Summary -->
+        <div class="grid-4 mb-8 stagger-children">
+          <div class="stat-card accent animate-in">
+            <div class="stat-icon" style="background:rgba(0,188,212,0.15);color:var(--color-accent);">🤖</div>
+            <div class="stat-value" data-count="94" data-suffix="%" style="font-size:24px;">0</div>
+            <div class="stat-label">Auto-Classification Accuracy</div>
+          </div>
+          <div class="stat-card success animate-in">
+            <div class="stat-icon" style="background:rgba(0,200,83,0.15);color:var(--color-success);">📈</div>
+            <div class="stat-value" data-count="78" data-suffix="%" style="font-size:24px;">0</div>
+            <div class="stat-label">SLA Compliance Rate</div>
+          </div>
+          <div class="stat-card warning animate-in">
+            <div class="stat-icon" style="background:rgba(255,111,0,0.15);color:var(--color-warning);">🔮</div>
+            <div class="stat-value" data-count="12" style="font-size:24px;">0</div>
+            <div class="stat-label">Predicted Hotspots</div>
+          </div>
+          <div class="stat-card danger animate-in">
+            <div class="stat-icon" style="background:rgba(213,0,0,0.15);color:var(--color-danger);">⚡</div>
+            <div class="stat-value" data-count="5" style="font-size:24px;">0</div>
+            <div class="stat-label">Anomalies Detected</div>
+          </div>
+        </div>
+
+        <!-- Trend + Category Breakdown -->
+        <div class="grid-2 mb-8">
+          <div class="glass-card insight-card animate-in">
+            <div class="insight-header">
+              <div class="insight-icon" style="background:rgba(0,188,212,0.15);color:var(--color-accent);">📈</div>
+              <div>
+                <h2 class="text-h3">30-Day Trend Analysis</h2>
+                <p class="text-secondary" style="font-size:var(--fs-label);">Grievance filing vs resolution trend</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="trend-chart-30d"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card insight-card animate-in">
+            <div class="insight-header">
+              <div class="insight-icon" style="background:rgba(0,200,83,0.15);color:var(--color-success);">📊</div>
+              <div>
+                <h2 class="text-h3">Category Breakdown</h2>
+                <p class="text-secondary" style="font-size:var(--fs-label);">Distribution across grievance types</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="category-breakdown"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotspots + Predictions -->
+        <div class="grid-2 mb-8">
+          <div class="glass-card insight-card animate-in">
+            <div class="insight-header">
+              <div class="insight-icon" style="background:rgba(213,0,0,0.15);color:var(--color-danger);">🔥</div>
+              <div>
+                <h2 class="text-h3">Predicted Hotspot Wards</h2>
+                <p class="text-secondary" style="font-size:var(--fs-label);">AI identifies wards likely to see higher activity</p>
+              </div>
+            </div>
+            <div class="hotspot-list">
+              <div class="hotspot-item">
+                <div class="hotspot-rank r1">1</div>
+                <div style="flex:1;">
+                  <div style="font-weight:var(--fw-semibold);font-size:var(--fs-body-sm);">Ward 150 — Koramangala</div>
+                  <div class="text-secondary" style="font-size:var(--fs-label);">+35% predicted increase • Water Supply, Drainage</div>
+                </div>
+                <span class="badge badge-priority-high">Critical</span>
+              </div>
+              <div class="hotspot-item">
+                <div class="hotspot-rank r1">2</div>
+                <div style="flex:1;">
+                  <div style="font-weight:var(--fw-semibold);font-size:var(--fs-body-sm);">Ward 174 — HSR Layout</div>
+                  <div class="text-secondary" style="font-size:var(--fs-label);">+28% predicted increase • Garbage, Road Damage</div>
+                </div>
+                <span class="badge badge-priority-high">High</span>
+              </div>
+              <div class="hotspot-item">
+                <div class="hotspot-rank r2">3</div>
+                <div style="flex:1;">
+                  <div style="font-weight:var(--fw-semibold);font-size:var(--fs-body-sm);">Ward 113 — Shanthinagar</div>
+                  <div class="text-secondary" style="font-size:var(--fs-label);">+22% predicted increase • Road Damage</div>
+                </div>
+                <span class="badge badge-priority-medium">Med</span>
+              </div>
+              <div class="hotspot-item">
+                <div class="hotspot-rank r2">4</div>
+                <div style="flex:1;">
+                  <div style="font-weight:var(--fw-semibold);font-size:var(--fs-body-sm);">Ward 194 — Whitefield</div>
+                  <div class="text-secondary" style="font-size:var(--fs-label);">+18% predicted increase • Drainage, Street Light</div>
+                </div>
+                <span class="badge badge-priority-medium">Med</span>
+              </div>
+              <div class="hotspot-item">
+                <div class="hotspot-rank r3">5</div>
+                <div style="flex:1;">
+                  <div style="font-weight:var(--fw-semibold);font-size:var(--fs-body-sm);">Ward 85 — Malleshwaram</div>
+                  <div class="text-secondary" style="font-size:var(--fs-label);">+15% predicted increase • Tree Fall</div>
+                </div>
+                <span class="badge badge-priority-low">Low</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card insight-card animate-in">
+            <div class="insight-header">
+              <div class="insight-icon" style="background:rgba(0,188,212,0.15);color:var(--color-accent);">🔮</div>
+              <div>
+                <h2 class="text-h3">AI Predictions</h2>
+                <p class="text-secondary" style="font-size:var(--fs-label);">Pattern-based forecasts for next 7 days</p>
+              </div>
+            </div>
+            <div class="prediction-card">
+              <div class="pred-title">📈 Monsoon-related grievances expected to spike</div>
+              <div class="pred-detail">Historical patterns show 40% increase in drainage and road damage complaints during early March rains.</div>
+              <div class="pred-confidence">Confidence: 87%</div>
+            </div>
+            <div class="prediction-card">
+              <div class="pred-title">🗑️ Garbage collection disruption in South Zone</div>
+              <div class="pred-detail">Vehicle maintenance schedule overlaps with route assignments in Wards 150, 174. Expect delays.</div>
+              <div class="pred-confidence">Confidence: 72%</div>
+            </div>
+            <div class="prediction-card">
+              <div class="pred-title">💡 Street light outages in East Zone</div>
+              <div class="pred-detail">Aging infrastructure in Wards 120, 194 likely to cause 15-20 new complaints this week.</div>
+              <div class="pred-confidence">Confidence: 65%</div>
+            </div>
+            <div class="prediction-card">
+              <div class="pred-title">⏱️ SLA breach risk for 23 open grievances</div>
+              <div class="pred-detail">Based on current officer workload and remaining time, 23 cases may breach SLA this week.</div>
+              <div class="pred-confidence">Confidence: 91%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLA Compliance + Anomalies -->
+        <div class="grid-2 mb-8">
+          <div class="glass-card insight-card animate-in">
+            <div class="insight-header">
+              <div class="insight-icon" style="background:rgba(0,200,83,0.15);color:var(--color-success);">✅</div>
+              <div>
+                <h2 class="text-h3">SLA Compliance by Department</h2>
+              </div>
+            </div>
+            <div class="sla-row">
+              <span class="sla-dept">Road Infrastructure</span>
+              <div class="sla-bar-wrap"><div class="progress-bar"><div class="progress-fill success animated" style="width:82%"></div></div></div>
+              <span class="sla-pct text-success">82%</span>
+            </div>
+            <div class="sla-row">
+              <span class="sla-dept">Water & Sanitation</span>
+              <div class="sla-bar-wrap"><div class="progress-bar"><div class="progress-fill warning animated" style="width:71%"></div></div></div>
+              <span class="sla-pct text-warning">71%</span>
+            </div>
+            <div class="sla-row">
+              <span class="sla-dept">Waste Management</span>
+              <div class="sla-bar-wrap"><div class="progress-bar"><div class="progress-fill animated" style="width:89%"></div></div></div>
+              <span class="sla-pct text-accent">89%</span>
+            </div>
+            <div class="sla-row">
+              <span class="sla-dept">Electrical</span>
+              <div class="sla-bar-wrap"><div class="progress-bar"><div class="progress-fill success animated" style="width:85%"></div></div></div>
+              <span class="sla-pct text-success">85%</span>
+            </div>
+            <div class="sla-row">
+              <span class="sla-dept">Parks & Gardens</span>
+              <div class="sla-bar-wrap"><div class="progress-bar"><div class="progress-fill danger animated" style="width:58%"></div></div></div>
+              <span class="sla-pct text-danger">58%</span>
+            </div>
+            <div class="sla-row">
+              <span class="sla-dept">Town Planning</span>
+              <div class="sla-bar-wrap"><div class="progress-bar"><div class="progress-fill warning animated" style="width:67%"></div></div></div>
+              <span class="sla-pct text-warning">67%</span>
+            </div>
+          </div>
+
+          <div class="glass-card insight-card animate-in">
+            <div class="insight-header">
+              <div class="insight-icon" style="background:rgba(213,0,0,0.15);color:var(--color-danger);">⚡</div>
+              <div>
+                <h2 class="text-h3">Anomalies Detected</h2>
+                <p class="text-secondary" style="font-size:var(--fs-label);">Unusual patterns flagged by AI</p>
+              </div>
+            </div>
+            <div class="anomaly-item">
+              <span class="anomaly-icon">🔴</span>
+              <div>
+                <div style="font-weight:var(--fw-semibold);margin-bottom:2px;">Spike in identical complaints</div>
+                <div class="text-secondary">15 near-identical water supply complaints from Ward 150 within 2 hours. Possibly a main line break.</div>
+              </div>
+            </div>
+            <div class="anomaly-item">
+              <span class="anomaly-icon">🟠</span>
+              <div>
+                <div style="font-weight:var(--fw-semibold);margin-bottom:2px;">Unusual resolution patterns</div>
+                <div class="text-secondary">Officer Kumar P. resolved 12 grievances in 30 minutes in Ward 96. Needs verification.</div>
+              </div>
+            </div>
+            <div class="anomaly-item">
+              <span class="anomaly-icon">🟡</span>
+              <div>
+                <div style="font-weight:var(--fw-semibold);margin-bottom:2px;">Repeated reopening — GRV-2012</div>
+                <div class="text-secondary">Same road damage grievance reopened 3 times. Repair quality may be insufficient.</div>
+              </div>
+            </div>
+            <div class="anomaly-item">
+              <span class="anomaly-icon">🟡</span>
+              <div>
+                <div style="font-weight:var(--fw-semibold);margin-bottom:2px;">Weekend filing anomaly</div>
+                <div class="text-secondary">60% more grievances filed on Sunday than typical. Could indicate a large civic event impact.</div>
+              </div>
+            </div>
+            <div class="anomaly-item">
+              <span class="anomaly-icon">🔵</span>
+              <div>
+                <div style="font-weight:var(--fw-semibold);margin-bottom:2px;">Low activity in Ward 56</div>
+                <div class="text-secondary">Zero grievances from Yelahanka in 14 days — below historical baseline of 2-3/day.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map Heatmap -->
+        <div class="glass-card animate-in">
+          <div class="insight-header">
+            <div class="insight-icon" style="background:rgba(0,188,212,0.15);color:var(--color-accent);">🗺️</div>
+            <div>
+              <h2 class="text-h3">Ward Heatmap</h2>
+              <p class="text-secondary" style="font-size:var(--fs-label);">Grievance density across Bengaluru wards</p>
+            </div>
+            <div style="margin-left:auto;">
+              <a href="map-view.html" class="btn btn-secondary btn-sm">Open Full Map →</a>
+            </div>
+          </div>
+          <div style="height:350px;">
+            <canvas id="heatmap-canvas" style="width:100%;height:100%;"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/charts.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 30-day trend
+      new LineChart('trend-chart-30d', [
+        {
+          name: 'Filed',
+          data: [
+            { label: 'W1', value: 280 }, { label: 'W2', value: 320 },
+            { label: 'W3', value: 290 }, { label: 'W4', value: 410 },
+            { label: 'W5', value: 380 }
+          ]
+        },
+        {
+          name: 'Resolved',
+          data: [
+            { label: 'W1', value: 250 }, { label: 'W2', value: 310 },
+            { label: 'W3', value: 340 }, { label: 'W4', value: 350 },
+            { label: 'W5', value: 390 }
+          ]
+        }
+      ]);
+
+      // Category breakdown
+      new DoughnutChart('category-breakdown', [
+        { label: 'Road', value: 342 },
+        { label: 'Water', value: 218 },
+        { label: 'Garbage', value: 287 },
+        { label: 'Light', value: 156 },
+        { label: 'Drain', value: 198 },
+        { label: 'Tree', value: 89 },
+        { label: 'Other', value: 45 }
+      ]);
+
+      // Ward heatmap (reusing map component)
+      new MapVisualization('heatmap-canvas');
+
+      // Responsive sidebar
+      if (window.innerWidth <= 768) {
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (toggle) toggle.style.display = 'flex';
+      }
+    });
+  </script>
+</body>
+</html>
+

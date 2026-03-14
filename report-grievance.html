@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Report a civic grievance in Bengaluru — roads, water, garbage, drainage, street lights.">
+  <title>Report Grievance — NagaraSeva</title>
+  <link rel="stylesheet" href="styles/design-system.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <style>
+    .report-form {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .form-card {
+      padding: var(--space-8);
+    }
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-8);
+    }
+    .step-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--fs-body-sm);
+      font-weight: var(--fw-bold);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-on-dark-muted);
+      border: 2px solid var(--border-subtle);
+      transition: all var(--transition-normal);
+    }
+    .step-dot.active {
+      background: var(--color-accent);
+      color: white;
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-glow);
+    }
+    .step-dot.completed {
+      background: var(--color-success);
+      color: white;
+      border-color: var(--color-success);
+    }
+    .step-line {
+      width: 60px;
+      height: 2px;
+      background: var(--border-subtle);
+      transition: background var(--transition-normal);
+    }
+    .step-line.active {
+      background: var(--color-accent);
+    }
+    .form-step {
+      display: none;
+      animation: fadeInUp 0.4s ease forwards;
+    }
+    .form-step.active {
+      display: block;
+    }
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    .category-option {
+      padding: var(--space-5);
+      text-align: center;
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.03);
+      border: 2px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+    .category-option:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: var(--border-glass);
+    }
+    .category-option.selected {
+      border-color: var(--color-accent);
+      background: rgba(0,188,212,0.08);
+    }
+    .category-option .cat-icon {
+      font-size: 32px;
+      margin-bottom: var(--space-2);
+    }
+    .category-option .cat-name {
+      font-size: var(--fs-body-sm);
+      font-weight: var(--fw-medium);
+    }
+    .priority-options {
+      display: flex;
+      gap: var(--space-3);
+    }
+    .priority-option {
+      flex: 1;
+      padding: var(--space-4);
+      text-align: center;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      background: rgba(255,255,255,0.03);
+    }
+    .priority-option:hover {
+      background: rgba(255,255,255,0.06);
+    }
+    .priority-option.selected {
+      border-color: var(--color-accent);
+    }
+    .priority-option.selected.high { border-color: var(--color-danger); background: rgba(213,0,0,0.1); }
+    .priority-option.selected.medium { border-color: var(--color-warning); background: rgba(255,111,0,0.1); }
+    .priority-option.selected.low { border-color: var(--color-success); background: rgba(0,200,83,0.1); }
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: var(--space-7);
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .review-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+    .review-item {
+      padding: var(--space-4);
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius-md);
+    }
+    .review-item .review-label {
+      font-size: var(--fs-label);
+      color: var(--text-on-dark-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-1);
+    }
+    .review-item .review-value {
+      font-weight: var(--fw-medium);
+    }
+    .success-state {
+      display: none;
+      text-align: center;
+      padding: var(--space-12) var(--space-6);
+    }
+    .success-state .success-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(0,200,83,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin: 0 auto var(--space-6);
+      animation: scaleIn 0.5s ease-out;
+    }
+    @media (max-width: 768px) {
+      .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .review-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="topbar-brand">
+        <div class="brand-icon">🏛️</div>
+        <div class="brand-name">Nagara<span>Seva</span></div>
+      </a>
+      <div class="topbar-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="citizen-dashboard.html" class="nav-link">My Grievances</a>
+        <a href="report-grievance.html" class="nav-link active">Report Issue</a>
+        <a href="map-view.html" class="nav-link">City Map</a>
+      </div>
+      <div class="topbar-actions">
+        <a href="citizen-dashboard.html" class="btn btn-ghost btn-sm">My Issues</a>
+        <button class="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-nav">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="citizen-dashboard.html" class="nav-link">My Grievances</a>
+    <a href="report-grievance.html" class="nav-link active">Report Issue</a>
+    <a href="map-view.html" class="nav-link">City Map</a>
+  </div>
+
+  <div class="page">
+    <canvas id="bg-particles" data-particles data-count="40" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+
+    <div class="page-content" style="position:relative;z-index:1;">
+      <div class="page-header animate-in">
+        <div class="breadcrumb">
+          <a href="index.html">Home</a>
+          <span class="separator">/</span>
+          <span>Report Grievance</span>
+        </div>
+        <h1 class="text-h1">Report a Civic Issue</h1>
+        <p class="text-secondary mt-2">Help us make Bengaluru better. Your report makes a difference.</p>
+      </div>
+
+      <div class="report-form" id="report-form">
+        <!-- Step Indicator -->
+        <div class="step-indicator animate-in">
+          <div class="step-dot active" data-step="1">1</div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="2">2</div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="3">3</div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="4">4</div>
+        </div>
+
+        <div class="glass-card form-card animate-in">
+          <!-- Step 1: Category -->
+          <div class="form-step active" id="step-1">
+            <h2 class="text-h2 mb-2">What type of issue?</h2>
+            <p class="text-secondary mb-6">Select the category that best describes your grievance.</p>
+            <div class="category-grid">
+              <div class="category-option" onclick="selectCategory(this, 'Road Damage')">
+                <div class="cat-icon">🚧</div>
+                <div class="cat-name">Road Damage</div>
+              </div>
+              <div class="category-option" onclick="selectCategory(this, 'Water Supply')">
+                <div class="cat-icon">💧</div>
+                <div class="cat-name">Water Supply</div>
+              </div>
+              <div class="category-option" onclick="selectCategory(this, 'Garbage')">
+                <div class="cat-icon">🗑️</div>
+                <div class="cat-name">Garbage</div>
+              </div>
+              <div class="category-option" onclick="selectCategory(this, 'Street Light')">
+                <div class="cat-icon">💡</div>
+                <div class="cat-name">Street Light</div>
+              </div>
+              <div class="category-option" onclick="selectCategory(this, 'Drainage')">
+                <div class="cat-icon">🌊</div>
+                <div class="cat-name">Drainage</div>
+              </div>
+              <div class="category-option" onclick="selectCategory(this, 'Tree Fall')">
+                <div class="cat-icon">🌳</div>
+                <div class="cat-name">Tree Fall</div>
+              </div>
+              <div class="category-option" onclick="selectCategory(this, 'Encroachment')">
+                <div class="cat-icon">🏗️</div>
+                <div class="cat-name">Encroachment</div>
+              </div>
+              <div class="category-option" onclick="selectCategory(this, 'Noise')">
+                <div class="cat-icon">📢</div>
+                <div class="cat-name">Noise</div>
+              </div>
+              <div class="category-option" onclick="selectCategory(this, 'Other')">
+                <div class="cat-icon">📋</div>
+                <div class="cat-name">Other</div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <div></div>
+              <button class="btn btn-primary" onclick="nextStep(2)">Next: Details →</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Details -->
+          <div class="form-step" id="step-2">
+            <h2 class="text-h2 mb-2">Describe the Issue</h2>
+            <p class="text-secondary mb-6">Provide details to help us understand and resolve the problem.</p>
+            <div class="form-group">
+              <label class="form-label">Title *</label>
+              <input type="text" class="form-input" id="grv-title" placeholder="Brief title of the issue" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description *</label>
+              <textarea class="form-textarea" id="grv-desc" placeholder="Describe the issue in detail..." rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Location / Address *</label>
+              <input type="text" class="form-input" id="grv-location" placeholder="e.g., MG Road near Trinity Circle, Ward 113">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ward Number</label>
+              <select class="form-select" id="grv-ward">
+                <option value="">Select ward...</option>
+                <option>Ward 113 — Shanthinagar</option>
+                <option>Ward 150 — Koramangala</option>
+                <option>Ward 174 — HSR Layout</option>
+                <option>Ward 85 — Malleshwaram</option>
+                <option>Ward 96 — Jayanagar</option>
+                <option>Ward 120 — Indiranagar</option>
+                <option>Ward 56 — Yelahanka</option>
+                <option>Ward 194 — Whitefield</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-ghost" onclick="prevStep(1)">← Back</button>
+              <button class="btn btn-primary" onclick="nextStep(3)">Next: Upload →</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Upload & Priority -->
+          <div class="form-step" id="step-3">
+            <h2 class="text-h2 mb-2">Upload Photos & Priority</h2>
+            <p class="text-secondary mb-6">Add evidence and set the urgency level.</p>
+            <div class="form-group">
+              <label class="form-label">Upload Photos</label>
+              <div class="form-file-upload" id="file-upload">
+                <div class="upload-icon">📸</div>
+                <p style="font-weight:var(--fw-medium); margin-bottom:var(--space-1);">Drop photos here or click to upload</p>
+                <p class="text-muted" style="font-size:var(--fs-label);">PNG, JPG up to 10MB each • Max 5 files</p>
+                <input type="file" multiple accept="image/*" style="display:none" id="file-input">
+              </div>
+              <div id="file-preview" class="flex gap-3 mt-4" style="flex-wrap:wrap;"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Priority Level</label>
+              <div class="priority-options">
+                <div class="priority-option low" onclick="selectPriority(this, 'Low')">
+                  <div style="font-size:20px;margin-bottom:4px;">🟢</div>
+                  <div style="font-weight:var(--fw-medium);">Low</div>
+                  <div style="font-size:var(--fs-label);color:var(--text-on-dark-muted);">Non-urgent</div>
+                </div>
+                <div class="priority-option medium" onclick="selectPriority(this, 'Medium')">
+                  <div style="font-size:20px;margin-bottom:4px;">🟡</div>
+                  <div style="font-weight:var(--fw-medium);">Medium</div>
+                  <div style="font-size:var(--fs-label);color:var(--text-on-dark-muted);">Needs attention</div>
+                </div>
+                <div class="priority-option high" onclick="selectPriority(this, 'High')">
+                  <div style="font-size:20px;margin-bottom:4px;">🔴</div>
+                  <div style="font-weight:var(--fw-medium);">High</div>
+                  <div style="font-size:var(--fs-label);color:var(--text-on-dark-muted);">Urgent/dangerous</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-ghost" onclick="prevStep(2)">← Back</button>
+              <button class="btn btn-primary" onclick="nextStep(4)">Next: Review →</button>
+            </div>
+          </div>
+
+          <!-- Step 4: Review -->
+          <div class="form-step" id="step-4">
+            <h2 class="text-h2 mb-2">Review & Submit</h2>
+            <p class="text-secondary mb-6">Please review your grievance details before submitting.</p>
+            <div class="review-grid mb-6" id="review-grid">
+              <div class="review-item">
+                <div class="review-label">Category</div>
+                <div class="review-value" id="rev-category">Road Damage</div>
+              </div>
+              <div class="review-item">
+                <div class="review-label">Priority</div>
+                <div class="review-value" id="rev-priority">Medium</div>
+              </div>
+              <div class="review-item">
+                <div class="review-label">Title</div>
+                <div class="review-value" id="rev-title">—</div>
+              </div>
+              <div class="review-item">
+                <div class="review-label">Location</div>
+                <div class="review-value" id="rev-location">—</div>
+              </div>
+            </div>
+            <div class="review-item mb-6" style="padding:var(--space-4);background:rgba(255,255,255,0.03);border-radius:var(--radius-md);">
+              <div class="review-label">Description</div>
+              <div class="review-value" id="rev-desc" style="color:var(--text-on-dark-secondary);">—</div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-ghost" onclick="prevStep(3)">← Back</button>
+              <button class="btn btn-success btn-lg" onclick="submitGrievance()">✅ Submit Grievance</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success State -->
+        <div class="success-state glass-card" id="success-state">
+          <div class="success-icon">✅</div>
+          <h2 class="text-h1 mb-4">Grievance Submitted!</h2>
+          <p class="text-secondary mb-2" style="font-size:var(--fs-body);">Your grievance has been registered successfully.</p>
+          <p class="text-accent mb-8" style="font-size:var(--fs-h2);font-weight:var(--fw-bold);" id="success-grv-id">GRV-XXXX</p>
+          <p class="text-muted mb-6">You will receive updates as the BBMP processes your grievance.</p>
+          <div class="flex justify-center gap-4" style="flex-wrap:wrap;">
+            <a href="citizen-dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+            <a href="report-grievance.html" class="btn btn-secondary">Report Another</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/particles.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let formData = { category: '', title: '', desc: '', location: '', ward: '', priority: 'Medium' };
+
+    function selectCategory(el, category) {
+      document.querySelectorAll('.category-option').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      formData.category = category;
+    }
+
+    function selectPriority(el, priority) {
+      document.querySelectorAll('.priority-option').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      formData.priority = priority;
+    }
+
+    function nextStep(step) {
+      // Collect data
+      formData.title = document.getElementById('grv-title')?.value || formData.title;
+      formData.desc = document.getElementById('grv-desc')?.value || formData.desc;
+      formData.location = document.getElementById('grv-location')?.value || formData.location;
+
+      // Update review
+      if (step === 4) {
+        document.getElementById('rev-category').textContent = formData.category || '—';
+        document.getElementById('rev-priority').textContent = formData.priority;
+        document.getElementById('rev-title').textContent = formData.title || '—';
+        document.getElementById('rev-location').textContent = formData.location || '—';
+        document.getElementById('rev-desc').textContent = formData.desc || '—';
+      }
+
+      showStep(step);
+    }
+
+    function prevStep(step) {
+      showStep(step);
+    }
+
+    function showStep(step) {
+      document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+      document.getElementById(`step-${step}`).classList.add('active');
+
+      document.querySelectorAll('.step-dot').forEach((dot, i) => {
+        dot.classList.remove('active', 'completed');
+        if (i + 1 === step) dot.classList.add('active');
+        else if (i + 1 < step) dot.classList.add('completed');
+      });
+
+      document.querySelectorAll('.step-line').forEach((line, i) => {
+        line.classList.toggle('active', i + 1 < step);
+      });
+    }
+
+    async function submitGrievance() {
+      // Check login
+      if (!NagaraSevaAPI.isLoggedIn()) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      try {
+        const data = await NagaraSevaAPI.createGrievance({
+          title: formData.title,
+          description: formData.desc,
+          category: formData.category,
+          priority: formData.priority,
+          location: {
+            address: formData.location,
+            ward: document.getElementById('grv-ward')?.value || ''
+          }
+        });
+
+        document.querySelector('.glass-card.form-card').style.display = 'none';
+        document.querySelector('.step-indicator').style.display = 'none';
+        const success = document.getElementById('success-state');
+        success.style.display = 'block';
+        success.style.animation = 'fadeInUp 0.5s ease forwards';
+        document.getElementById('success-grv-id').textContent = data.grievance.grievanceId;
+        if (window.showToast) window.showToast('Grievance submitted successfully!', 'success');
+      } catch (err) {
+        if (window.showToast) window.showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    // File upload
+    const fileUpload = document.getElementById('file-upload');
+    const fileInput = document.getElementById('file-input');
+    if (fileUpload && fileInput) {
+      fileUpload.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', () => {
+        const preview = document.getElementById('file-preview');
+        preview.innerHTML = '';
+        Array.from(fileInput.files).slice(0, 5).forEach(file => {
+          const div = document.createElement('div');
+          div.style.cssText = 'width:60px;height:60px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-on-dark-secondary);overflow:hidden;border:1px solid var(--border-subtle);';
+          div.textContent = file.name.substring(0, 8) + '...';
+          preview.appendChild(div);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

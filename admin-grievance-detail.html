@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BBMP Admin — Detailed grievance view with assignment, status change, and internal notes.">
+  <title>Admin Grievance GRV-2041 — NagaraSeva</title>
+  <link rel="stylesheet" href="styles/design-system.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <style>
+    .admin-actions-panel {
+      padding: var(--space-6);
+    }
+    .action-group {
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-5);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .action-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .action-group h3 {
+      font-size: var(--fs-body-sm);
+      font-weight: var(--fw-semibold);
+      margin-bottom: var(--space-3);
+      color: var(--text-on-dark-secondary);
+    }
+    .photo-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    .photo-thumb {
+      aspect-ratio: 4/3;
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      border: 1px solid var(--border-subtle);
+    }
+    .internal-note {
+      background: rgba(255,111,0,0.06);
+      border: 1px solid rgba(255,111,0,0.15);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-3);
+    }
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-2);
+    }
+    .note-author { font-weight: var(--fw-semibold); font-size: var(--fs-body-sm); }
+    .note-time { font-size: var(--fs-label); color: var(--text-on-dark-muted); }
+    .note-text { font-size: var(--fs-body-sm); color: var(--text-on-dark-secondary); }
+    .citizen-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius-md);
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: var(--fs-body-sm);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .info-label { color: var(--text-on-dark-secondary); }
+    .info-row .info-value { font-weight: var(--fw-medium); }
+    .escalation-warning {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: rgba(213,0,0,0.08);
+      border: 1px solid rgba(213,0,0,0.2);
+      border-radius: var(--radius-md);
+      font-size: var(--fs-body-sm);
+      color: var(--color-danger-light);
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="index.html" class="topbar-brand">
+          <div class="brand-icon">🏛️</div>
+          <div class="brand-name">Nagara<span>Seva</span></div>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Overview</div>
+        <a href="admin-dashboard.html" class="sidebar-link"><span class="link-icon">📊</span> Dashboard</a>
+        <a href="admin-grievances.html" class="sidebar-link"><span class="link-icon">📋</span> Grievances <span class="link-badge">24</span></a>
+        <div class="sidebar-section-label">Management</div>
+        <a href="admin-grievance-detail.html" class="sidebar-link active"><span class="link-icon">📝</span> Detail View</a>
+        <a href="admin-insights.html" class="sidebar-link"><span class="link-icon">🤖</span> AI Insights</a>
+        <a href="map-view.html" class="sidebar-link"><span class="link-icon">🗺️</span> City Map</a>
+        <div class="sidebar-section-label">System</div>
+        <a href="#" class="sidebar-link"><span class="link-icon">👥</span> Officers</a>
+        <a href="#" class="sidebar-link"><span class="link-icon">⚙️</span> Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar sm">AO</div>
+          <div class="sidebar-user-info">
+            <div class="user-name">Admin Officer</div>
+            <div class="user-role">BBMP Zone 1</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <div class="flex items-center gap-4">
+          <button class="hamburger sidebar-toggle" style="display:none;" aria-label="Toggle sidebar">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="breadcrumb" style="font-size:var(--fs-body-sm);">
+            <a href="admin-dashboard.html">Dashboard</a>
+            <span class="separator" style="color:var(--text-on-dark-muted);">/</span>
+            <a href="admin-grievances.html">Grievances</a>
+            <span class="separator" style="color:var(--text-on-dark-muted);">/</span>
+            <span>GRV-2041</span>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost btn-sm" onclick="history.back()">← Back to List</button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <!-- Header -->
+        <div class="flex justify-between items-start mb-6 animate-in" style="flex-wrap:wrap;gap:var(--space-4);">
+          <div>
+            <h1 class="text-h1 mb-2">Pothole on MG Road near Trinity Circle</h1>
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="text-accent" style="font-weight:var(--fw-bold);">GRV-2041</span>
+              <span class="badge badge-in-progress">⏳ In Progress</span>
+              <span class="badge badge-priority-high">High Priority</span>
+              <span class="text-muted text-body-sm">Filed Mar 10, 2026</span>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button class="btn btn-success btn-sm" onclick="if(window.showToast) showToast('Marked as resolved!','success')">✅ Mark Resolved</button>
+            <button class="btn btn-danger btn-sm" onclick="if(window.showToast) showToast('Escalated!','info')">🔺 Escalate</button>
+          </div>
+        </div>
+
+        <div class="detail-layout">
+          <!-- Left Column -->
+          <div class="flex flex-col gap-6">
+            <!-- Description -->
+            <div class="glass-card animate-in">
+              <h2 class="text-h3 mb-4">Grievance Details</h2>
+              <p class="text-body-sm" style="color:var(--text-on-dark-secondary);line-height:var(--lh-relaxed);margin-bottom:var(--space-5);">
+                There is a large pothole approximately 2 feet wide and 8 inches deep on MG Road, 
+                near the Trinity Circle junction on the left lane approaching from Brigade Road. 
+                The pothole is extremely dangerous for two-wheelers and has already caused multiple 
+                accidents. The area gets worse during rainy weather as the pothole fills with water 
+                and becomes invisible to drivers.
+              </p>
+              
+              <h3 class="text-body mb-3" style="font-weight:var(--fw-semibold);">Photos</h3>
+              <div class="photo-gallery">
+                <div class="photo-thumb">🚧</div>
+                <div class="photo-thumb">📸</div>
+                <div class="photo-thumb">🛣️</div>
+              </div>
+
+              <h3 class="text-body mt-6 mb-3" style="font-weight:var(--fw-semibold);">Citizen Info</h3>
+              <div class="citizen-info">
+                <div class="avatar">AS</div>
+                <div>
+                  <div style="font-weight:var(--fw-semibold);">Akarsh S</div>
+                  <div class="text-secondary text-body-sm">akarsh@email.com • +91 98765 43210</div>
+                  <div class="text-muted" style="font-size:var(--fs-label);">4 previous grievances • 3 resolved</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="glass-card animate-in">
+              <h2 class="text-h3 mb-6">Activity Timeline</h2>
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-time">Mar 12, 2026 — 10:30 AM</div>
+                  <div class="timeline-content">
+                    <strong>Repair crew dispatched</strong> — Road maintenance team sent to location. ETA: 2 hours.
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-time">Mar 11, 2026 — 2:15 PM</div>
+                  <div class="timeline-content">
+                    <strong>Assigned to Ramesh Kumar</strong> — Sr. Engineer, Road Infrastructure Dept.
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-time">Mar 10, 2026 — 5:45 PM</div>
+                  <div class="timeline-content">
+                    <strong>AI Classification</strong> — Category: Road Damage, Priority: High, Dept: Road Infrastructure
+                  </div>
+                </div>
+                <div class="timeline-item completed">
+                  <div class="timeline-time">Mar 10, 2026 — 4:28 PM</div>
+                  <div class="timeline-content">
+                    <strong>Grievance submitted</strong> by citizen Akarsh S.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Internal Notes -->
+            <div class="glass-card animate-in">
+              <h2 class="text-h3 mb-4">Internal Notes</h2>
+              <div class="internal-note">
+                <div class="note-header">
+                  <span class="note-author">Admin Officer</span>
+                  <span class="note-time">Mar 12, 2026 • 9:00 AM</span>
+                </div>
+                <div class="note-text">Verified location with field team. Pothole confirmed, size is larger than reported. Assigning priority repair crew from Ward 113 depot.</div>
+              </div>
+              <div class="internal-note">
+                <div class="note-header">
+                  <span class="note-author">Ramesh Kumar</span>
+                  <span class="note-time">Mar 11, 2026 • 3:00 PM</span>
+                </div>
+                <div class="note-text">Accepted assignment. Will coordinate with road crew tomorrow morning. Need to check material availability.</div>
+              </div>
+              
+              <div class="form-group mt-4">
+                <textarea class="form-textarea" placeholder="Add internal note (not visible to citizen)..." rows="3"></textarea>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="if(window.showToast) showToast('Note added!','success')">Add Note</button>
+            </div>
+          </div>
+
+          <!-- Right Column: Admin Actions Panel -->
+          <div class="flex flex-col gap-6">
+            <!-- Quick Info -->
+            <div class="glass-card animate-in">
+              <h2 class="text-h3 mb-4">Info</h2>
+              <div class="info-row"><span class="info-label">ID</span><span class="info-value text-accent">GRV-2041</span></div>
+              <div class="info-row"><span class="info-label">Category</span><span class="info-value">🚧 Road Damage</span></div>
+              <div class="info-row"><span class="info-label">Ward</span><span class="info-value">Ward 113 - Shanthinagar</span></div>
+              <div class="info-row"><span class="info-label">Priority</span><span class="badge badge-priority-high">High</span></div>
+              <div class="info-row"><span class="info-label">Status</span><span class="badge badge-in-progress">In Progress</span></div>
+              <div class="info-row"><span class="info-label">Filed</span><span class="info-value">Mar 10, 2026</span></div>
+              <div class="info-row"><span class="info-label">Location</span><span class="info-value">MG Road, near Trinity Circle</span></div>
+              <div class="info-row"><span class="info-label">Department</span><span class="info-value">Road Infrastructure</span></div>
+            </div>
+
+            <!-- Admin Actions -->
+            <div class="glass-card admin-actions-panel animate-in">
+              <h2 class="text-h3 mb-5">Actions</h2>
+              
+              <div class="action-group">
+                <h3>Change Status</h3>
+                <select class="form-select" style="width:100%;margin-bottom:var(--space-3);">
+                  <option>In Progress</option>
+                  <option>Open</option>
+                  <option>Resolved</option>
+                  <option>Closed</option>
+                  <option>Escalated</option>
+                </select>
+                <button class="btn btn-primary btn-sm" style="width:100%;" onclick="if(window.showToast) showToast('Status updated!','success')">Update Status</button>
+              </div>
+
+              <div class="action-group">
+                <h3>Assign Officer</h3>
+                <select class="form-select" style="width:100%;margin-bottom:var(--space-3);">
+                  <option>Ramesh Kumar — Sr. Engineer</option>
+                  <option>Suresh M. — Jr. Engineer</option>
+                  <option>Kumar P. — Field Inspector</option>
+                  <option>Priya S. — Ward Officer</option>
+                  <option>Anand R. — Sr. Engineer</option>
+                </select>
+                <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="if(window.showToast) showToast('Officer reassigned!','success')">Reassign</button>
+              </div>
+
+              <div class="action-group">
+                <h3>Priority</h3>
+                <select class="form-select" style="width:100%;margin-bottom:var(--space-3);">
+                  <option>High</option>
+                  <option>Medium</option>
+                  <option>Low</option>
+                </select>
+                <button class="btn btn-ghost btn-sm" style="width:100%;" onclick="if(window.showToast) showToast('Priority updated!','success')">Update Priority</button>
+              </div>
+            </div>
+
+            <!-- SLA -->
+            <div class="glass-card animate-in">
+              <h2 class="text-h3 mb-4">SLA Tracker</h2>
+              <div class="flex justify-between text-body-sm mb-2">
+                <span class="text-secondary">Elapsed</span>
+                <span class="text-warning" style="font-weight:var(--fw-bold);">2 of 5 days</span>
+              </div>
+              <div class="progress-bar mb-4">
+                <div class="progress-fill warning animated" style="width:40%"></div>
+              </div>
+              <div class="text-muted" style="font-size:var(--fs-label);">Deadline: March 15, 2026 • 3 days remaining</div>
+            </div>
+
+            <!-- Escalation -->
+            <div class="glass-card animate-in">
+              <h2 class="text-h3 mb-4">Escalation</h2>
+              <div class="escalation-warning mb-4">
+                ⚠️ Citizen has requested escalation
+              </div>
+              <button class="btn btn-danger btn-sm" style="width:100%;margin-bottom:var(--space-2);" onclick="if(window.showToast) showToast('Escalated to Zone Commissioner','info')">Escalate to Zone Head</button>
+              <button class="btn btn-ghost btn-sm" style="width:100%;" onclick="if(window.showToast) showToast('Escalation dismissed','info')">Dismiss Request</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if (window.innerWidth <= 768) {
+      const toggle = document.querySelector('.sidebar-toggle');
+      if (toggle) toggle.style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
+

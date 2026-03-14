@@ -1,0 +1,267 @@
+/* ============================================
+   NagaraSeva — Animations
+   ============================================ */
+
+/* ── Skeleton Pulse ── */
+@keyframes skeleton-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Entrance Fade Up ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.animate-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.stagger-children .animate-in:nth-child(1) { transition-delay: 0.05s; }
+.stagger-children .animate-in:nth-child(2) { transition-delay: 0.1s; }
+.stagger-children .animate-in:nth-child(3) { transition-delay: 0.15s; }
+.stagger-children .animate-in:nth-child(4) { transition-delay: 0.2s; }
+.stagger-children .animate-in:nth-child(5) { transition-delay: 0.25s; }
+.stagger-children .animate-in:nth-child(6) { transition-delay: 0.3s; }
+.stagger-children .animate-in:nth-child(7) { transition-delay: 0.35s; }
+.stagger-children .animate-in:nth-child(8) { transition-delay: 0.4s; }
+
+/* ── 3D Card Tilt ── */
+.tilt-card {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.tilt-card-inner {
+  transition: transform var(--transition-normal);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.tilt-card:hover .tilt-card-inner {
+  /* JS overrides this dynamically */
+  transform: rotateX(2deg) rotateY(2deg);
+}
+
+/* Shine effect on tilt */
+.tilt-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  pointer-events: none;
+}
+
+.tilt-card:hover .tilt-shine {
+  opacity: 1;
+}
+
+/* ── Button Glow ── */
+@keyframes buttonGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(0, 188, 212, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(0, 188, 212, 0.5), 0 0 50px rgba(0, 188, 212, 0.2); }
+}
+
+.btn-glow {
+  animation: buttonGlow 2s ease-in-out infinite;
+}
+
+/* ── Focus Ring Animation ── */
+@keyframes focusRing {
+  0% { box-shadow: 0 0 0 0 rgba(0, 188, 212, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(0, 188, 212, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 188, 212, 0); }
+}
+
+.focus-ring:focus {
+  animation: focusRing 0.6s ease-out;
+}
+
+/* ── Float Animation ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ── Pulse Dot ── */
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+.pulse-dot {
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+/* ── Spin ── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ── Counter Animation ── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.count-up {
+  animation: countUp 0.6s ease-out forwards;
+}
+
+/* ── Gradient Shimmer (for hero elements) ── */
+@keyframes gradientShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-shimmer {
+  background: linear-gradient(
+    270deg,
+    var(--color-accent),
+    var(--color-primary-light),
+    var(--color-accent-light),
+    var(--color-accent)
+  );
+  background-size: 300% 300%;
+  animation: gradientShimmer 6s ease infinite;
+}
+
+/* ── Ripple Effect (for buttons) ── */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+/* ── Slide In Right ── */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.4s ease-out forwards;
+}
+
+/* ── Scale In ── */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+/* ── Progress Bar Fill Animation ── */
+@keyframes progressFill {
+  from { width: 0; }
+}
+
+.progress-fill.animated {
+  animation: progressFill 1s ease-out forwards;
+}
+
+/* ── Glow Border Effect ── */
+@keyframes glowBorder {
+  0%, 100% { border-color: rgba(0, 188, 212, 0.2); }
+  50% { border-color: rgba(0, 188, 212, 0.5); }
+}
+
+.glow-border {
+  animation: glowBorder 2s ease-in-out infinite;
+}
+
+/* ── Card Hover Lift ── */
+.hover-lift {
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Number Ticker ── */
+@keyframes numberTick {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.number-tick {
+  display: inline-block;
+  animation: numberTick 0.5s ease-out forwards;
+}
+
+/* ── Reduce Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-in {
+    opacity: 1;
+    transform: none;
+  }
+}
