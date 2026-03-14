@@ -35,36 +35,29 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/nagaraseva';
 
-const connectDB = async () => {
-  if (mongoose.connection.readyState >= 1) return;
-  return mongoose.connect(MONGODB_URI);
-};
-
-// Only run the persistent connection and listener locally.
-// On Vercel, the database connection is explicitly managed per-request inside `api/index.js`.
-if (!process.env.VERCEL) {
-  connectDB()
-    .then(() => {
-      console.log('');
-      console.log('  ┌─────────────────────────────────────────────┐');
-      console.log('  │                                             │');
-      console.log('  │   🏛️  NagaraSeva Server Running!            │');
-      console.log('  │                                             │');
-      console.log(`  │   API:      http://localhost:${PORT}/api      │`);
-      console.log(`  │   Frontend: http://localhost:${PORT}          │`);
-      console.log('  │   MongoDB:  Connected ✅                    │');
-      console.log('  │                                             │');
-      console.log('  └─────────────────────────────────────────────┘');
-      console.log('');
-      app.listen(PORT);
-    })
-    .catch(err => {
-      console.error('');
-      console.error('  ❌ MongoDB connection failed:', err.message);
-      console.error('  Make sure MongoDB is running or MONGODB_URI is correct.');
-      console.error('');
-    });
-}
-
-// Export the Express API for Vercel's serverless functions
-module.exports = app;
+mongoose.connect(MONGODB_URI)
+  .then(() => {
+    console.log('');
+    console.log('  ┌─────────────────────────────────────────────┐');
+    console.log('  │                                             │');
+    console.log('  │   🏛️  NagaraSeva Server Running!            │');
+    console.log('  │                                             │');
+    console.log(`  │   API:      http://localhost:${PORT}/api      │`);
+    console.log(`  │   Frontend: http://localhost:${PORT}          │`);
+    console.log('  │   MongoDB:  Connected ✅                    │');
+    console.log('  │                                             │');
+    console.log('  └─────────────────────────────────────────────┘');
+    console.log('');
+    
+    app.listen(PORT);
+  })
+  .catch(err => {
+    console.error('');
+    console.error('  ❌ MongoDB connection failed:', err.message);
+    console.error('');
+    console.error('  Make sure MongoDB is running:');
+    console.error('    • Local: mongod --dbpath /path/to/data');
+    console.error('    • Atlas: Update MONGODB_URI in server/.env');
+    console.error('');
+    process.exit(1);
+  });
